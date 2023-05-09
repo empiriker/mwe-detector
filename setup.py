@@ -21,5 +21,5 @@ setuptools.setup(
     packages=["mwe_detector"],
     zip_safe=False,
     include_package_data=True,
-    package_data={"": ["*.json"]},
+    package_data={"mwe_detector": ["data/*.json"]},
 )
