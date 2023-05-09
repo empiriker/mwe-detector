@@ -214,6 +214,9 @@ class MWEDetector:
 
     def from_disk(self, path, exclude=tuple()):
         # path = ensure_path(path)
-        data = srsly.read_json(os.path.join(path, self._lang + "_data.json"))
+        filename = os.path.join(path, self._lang + "_data.json")
+        print(filename)
+        data = srsly.read_json(filename)
+
         self._data.from_dict(data)
         return self
