@@ -213,7 +213,7 @@ class MWEDetector:
         )
 
     def from_disk(self, path, exclude=tuple()):
-        path = ensure_path(path)
+        # path = ensure_path(path)
         data = srsly.read_json(os.path.join(path, self._lang + "_data.json"))
         self._data.from_dict(data)
         return self
