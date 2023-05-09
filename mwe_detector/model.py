@@ -7,6 +7,7 @@ from spacy.util import ensure_path
 # Utilities
 from collections import defaultdict
 from itertools import product
+import os
 
 # Type hints
 from typing import List, Dict, TypedDict
@@ -207,10 +208,12 @@ class MWEDetector:
         if not path.exists():
             path.mkdir()
 
-        srsly.write_json(path / (self._lang + "_data.json"), self._data.to_dict())
+        srsly.write_json(
+            os.path.join(path, self._lang + "_data.json"), self._data.to_dict()
+        )
 
     def from_disk(self, path, exclude=tuple()):
         path = ensure_path(path)
-        data = srsly.read_json(path / (self._lang + "_data.json"))
+        data = srsly.read_json(os.path.join(path, self._lang + "_data.json"))
         self._data.from_dict(data)
         return self
