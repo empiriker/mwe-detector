@@ -35,11 +35,6 @@ from mwe_detector.filters import (
 if not Token.has_extension("wikt_mwe"):
     Token.set_extension("wikt_mwe", default="*")
 
-if not Doc.has_extension("mwe_lemma"):
-    Doc.set_extension("mwe_lemma", default="")
-if not Doc.has_extension("mwe_pos"):
-    Doc.set_extension("mwe_pos", default="")
-
 
 class Filters(TypedDict):
     f1: F1
@@ -114,6 +109,7 @@ class MWEDetector:
             "f7": F7(),
             "f8": F8(),
         }
+        self._lang = nlp.lang
 
     @property
     def mwes(self):
@@ -150,6 +146,11 @@ class MWEDetector:
         return result
 
     def train(self, examples: List[Doc]):
+        if not Doc.has_extension("mwe_lemma"):
+            Doc.set_extension("mwe_lemma", default="")
+        if not Doc.has_extension("mwe_pos"):
+            Doc.set_extension("mwe_pos", default="")
+
         for example in examples:
             example_as_example_type = self._doc_to_example_type(example)
             mwe_key = self._example_to_key(example_as_example_type)
@@ -206,10 +207,10 @@ class MWEDetector:
         if not path.exists():
             path.mkdir()
 
-        srsly.write_json(path / "data.json", self._data.to_dict())
+        srsly.write_json(path / (self._lang + "_data.json"), self._data.to_dict())
 
     def from_disk(self, path, exclude=tuple()):
         path = ensure_path(path)
-        data = srsly.read_json(path / "data.json")
+        data = srsly.read_json(path / (self._lang + "_data.json"))
         self._data.from_dict(data)
         return self
