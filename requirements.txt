@@ -1,5 +1,5 @@
 multiset==3.0.1
-numpy==1.21.5
+numpy>=1.15.0
 setuptools==59.6.0
 spacy==3.5.1
 srsly==2.4.6
