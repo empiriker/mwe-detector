@@ -1,5 +1,14 @@
 from setuptools import setup
 
+import os
+
+lib_folder = os.path.dirname(os.path.realpath(__file__))
+requirement_path = lib_folder + "/requirements.txt"
+install_requires = []
+if os.path.isfile(requirement_path):
+    with open(requirement_path) as f:
+        install_requires = f.read().splitlines()
+
 setup(
     name="mwe_detector",
     version="0.0.1",
@@ -10,4 +19,5 @@ setup(
     license="All rights reserved",
     packages=["mwe_detector"],
     zip_safe=False,
+    install_requires=install_requires,
 )
