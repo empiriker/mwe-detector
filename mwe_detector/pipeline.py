@@ -6,12 +6,12 @@ from mwe_detector.model import MWEDetector
 @French.factory("mwe_detector")
 def create_mwe_detector(nlp, name):
     mweDetector = MWEDetector(nlp)
-    mweDetector.from_disk("data")
+    mweDetector.from_disk("mwe_detector/data")
     return mweDetector
 
 
 @English.factory("mwe_detector")
 def create_mwe_detector(nlp, name):
     mweDetector = MWEDetector(nlp)
-    mweDetector.from_disk("data")
+    mweDetector.from_disk("mwe_detector/data")
     return mweDetector

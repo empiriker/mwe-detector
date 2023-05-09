@@ -20,4 +20,8 @@ setup(
     packages=["mwe_detector"],
     zip_safe=False,
     install_requires=install_requires,
+    package_data={
+        # If any package contains *.txt or *.rst files, include them:
+        "": ["*.json"],
+    },
 )
