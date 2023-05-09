@@ -1,15 +1,16 @@
-from setuptools import setup
+# from setuptools import setup
 
-import os
+# import os
 
-lib_folder = os.path.dirname(os.path.realpath(__file__))
-requirement_path = lib_folder + "/requirements.txt"
-install_requires = []
-if os.path.isfile(requirement_path):
-    with open(requirement_path) as f:
-        install_requires = f.read().splitlines()
+# lib_folder = os.path.dirname(os.path.realpath(__file__))
+# requirement_path = lib_folder + "/requirements.txt"
+# install_requires = []
+# if os.path.isfile(requirement_path):
+#     with open(requirement_path) as f:
+#         install_requires = f.read().splitlines()
+import setuptools
 
-setup(
+setuptools.setup(
     name="mwe_detector",
     version="0.0.1",
     description="A SpaCy MWEDetector pipeline component",
@@ -19,8 +20,6 @@ setup(
     license="All rights reserved",
     packages=["mwe_detector"],
     zip_safe=False,
-    install_requires=install_requires,
-    package_data={
-        "": ["*.json"],
-    },
+    include_package_data=True,
+    package_data={"": ["*.json"]},
 )
