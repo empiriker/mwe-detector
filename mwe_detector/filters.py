@@ -3,7 +3,6 @@ import numpy as np
 from spacy.tokens import Doc, Token
 
 # Utilities
-from multiset import Multiset
 from itertools import product
 
 # Type hints
@@ -54,7 +53,12 @@ class F1(Filter):
 
     def filter(self, pos_sets: F1Data, sent: Doc, match_idx: Tuple[int, ...]):
         match_pos = self._get_multiset(sent, match_idx)
-        return any([Multiset(match_pos) <= Multiset(pos_set) for pos_set in pos_sets])
+        return any(
+            [
+                all(match_pos.count(pos) >= pos_set.count(pos) for pos in set(pos_set))
+                for pos_set in pos_sets
+            ]
+        )
 
     def default_data() -> F1Data:
         return []
