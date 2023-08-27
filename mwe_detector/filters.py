@@ -7,7 +7,7 @@ from itertools import product
 
 # Type hints
 from abc import ABC, abstractmethod
-from typing import Tuple, List, TypedDict
+from typing import Tuple, List, TypedDict, TypeAlias, Generic, TypeVar
 
 
 class ExampleType(TypedDict):
@@ -18,26 +18,28 @@ class ExampleType(TypedDict):
     pos: str
 
 
-class Filter(ABC):
+T = TypeVar("T")
+
+
+class Filter(ABC, Generic[T]):
     @staticmethod
     @abstractmethod
-    def default_data() -> any:
+    def default_data() -> T:
         raise NotImplementedError
 
     @abstractmethod
-    def filter(self, data: any, sent: Doc, match_idx: Tuple[int, ...]) -> bool:
+    def filter(self, data: T, sent: Doc, match_idx: Tuple[int, ...]) -> bool:
         raise NotImplementedError
 
     @abstractmethod
-    def add_example(self, data: any, mwe: ExampleType) -> None:
+    def add_example(self, data: T, mwe: ExampleType) -> None:
         raise NotImplementedError
 
 
-class F1Data:
-    List
+F1Data: TypeAlias = List[List[str]]
 
 
-class F1(Filter):
+class F1(Filter[F1Data]):
     """F1: Components should be disambiguated
     # This filter keeps track of all the multisets of POS tags, observed in the training set. It only accepts candidate matches whose POS multiset was observed during training.
     # This filter runs the risk of degrading in significance when example sentences are automatically POS-tagged. Every wrong POS tag will reduce the filter's strictness and, thus, increase recall of the whole system. The same holds true for fiters F2 and F3.
@@ -60,15 +62,14 @@ class F1(Filter):
             ]
         )
 
-    def default_data() -> F1Data:
+    def default_data(self) -> F1Data:
         return []
 
 
-class F2Data:
-    List
+F2Data: TypeAlias = List[List[str]]
 
 
-class F2(Filter):
+class F2(Filter[F2Data]):
     """
     F2: Components should appear in specific orders *disregarding discontinuities*
     This filter accepts only candidate matches whose order of POS-tags has been observed in the training set.
@@ -86,15 +87,14 @@ class F2(Filter):
         match_pos = self._get_pos(sent, match_idx)
         return any([match_pos == pos_order for pos_order in pos_orders])
 
-    def default_data() -> F2Data:
+    def default_data(self) -> F2Data:
         return []
 
 
-class F3Data:
-    List
+F3Data: TypeAlias = List[List[str]]
 
 
-class F3(Filter):
+class F3(Filter[F3Data]):
     """
     F3: Components should appear in specific orders *considering discontinuities*
     The same as F2 but considering all POS tags from the first candidate token to the last candidate token (considering discontinuities).
@@ -112,15 +112,14 @@ class F3(Filter):
         match_pos = self._get_pos(sent, match_idx)
         return any([match_pos == pos_order for pos_order in pos_orders])
 
-    def default_data() -> F3Data:
+    def default_data(self) -> F3Data:
         return []
 
 
-class F4Data:
-    List
+F4Data: TypeAlias = List[int]
 
 
-class F4(Filter):
+class F4(Filter[F4Data]):
     """
     F4: Components should not be too far
     This filter only accepts candidate matches where the largest discontinuity is at most the largest discontinuity, observed in the training set.
@@ -129,7 +128,7 @@ class F4(Filter):
     def __init__(self):
         self.discontinuities = []
 
-    def _get_discontinuity(self, match_idx: Tuple[int, ...]):
+    def _get_discontinuity(self, match_idx: Tuple[int, ...]) -> int:
         idx = list(match_idx)
         idx.sort()
         return max([idx[i + 1] - idx[i] for i in range(len(idx) - 1)])
@@ -143,15 +142,14 @@ class F4(Filter):
         match_discontinuity = self._get_discontinuity(match_idx)
         return match_discontinuity <= max(discontinuities)
 
-    def default_data() -> F4Data:
+    def default_data(self) -> F4Data:
         return []
 
 
-class F5Data:
-    None
+F5Data: TypeAlias = None
 
 
-class F5(Filter):
+class F5(Filter[F5Data]):
     """
     F5: Closer components are preferred over distant ones
     This filter is global (i.e. works in the same way for all MWEs). It lets a candidate match pass only if this match has the smallest discontinuity for all other matches of the given multiset of lemmata in the given sentence.
@@ -186,15 +184,14 @@ class F5(Filter):
     def add_example(self, data: F5Data, mwe: ExampleType):
         return None
 
-    def default_data() -> F5Data:
+    def default_data(self) -> F5Data:
         return None
 
 
-class F6Data:
-    None
+F6Data: TypeAlias = None
 
 
-class F6(Filter):
+class F6(Filter[F6Data]):
     """
     F6: Components should be syntactically connected
     This filter is global. It keeps a candidate match of two tokens if the tokens are parents or grandparents of each other. It keeps candidate matches of more than two tokens if these tokens build a connected subgraph of the dependency tree.
@@ -228,15 +225,14 @@ class F6(Filter):
     def add_example(self, data: F6Data, mwe: ExampleType):
         return None
 
-    def default_data() -> F6Data:
+    def default_data(self) -> F6Data:
         return None
 
 
-class F7Data:
-    List
+F7Data: TypeAlias = List[str]
 
 
-class F7(Filter):
+class F7(Filter[F7Data]):
     """ "
     F7: Nominal components should appear with a seen inflection
     If a candidate match has exactly one noun, this filter expects this noun to have a previous observed inflection. If a candidate match has no or more than one noun, it automatically passes this filter.
@@ -245,12 +241,13 @@ class F7(Filter):
     def _get_nouns(self, doc: Doc, match_idx: Tuple[int, ...]):
         return list(filter(lambda x: x.pos_ == "NOUN", [doc[i] for i in match_idx]))
 
-    def _get_noun_morphs(self, doc: Doc, match_idx: Tuple[int, ...]):
-        nouns = self._get_nouns(doc, match_idx)
-        return [tok.morph.to_json() for tok in nouns]
-
     def add_example(self, noun_morphs: F7Data, mwe: ExampleType):
-        noun_morph = self._get_noun_morphs(mwe["example"], mwe["match_idx"])
+        nouns = self._get_nouns(mwe["example"], mwe["match_idx"])
+        if not len(nouns) == 1:
+            return True
+        noun = nouns[0]
+
+        noun_morph = noun.morph.to_json()
         if noun_morph not in noun_morphs:
             noun_morphs.append(noun_morph)
 
@@ -261,15 +258,14 @@ class F7(Filter):
         noun = nouns[0]
         return noun.morph.to_json() in noun_morphs
 
-    def default_data() -> F7Data:
+    def default_data(self) -> F7Data:
         return []
 
 
-class F8Data:
-    None
+F8Data: TypeAlias = None
 
 
-class F8(Filter):
+class F8(Filter[F8Data]):
     """
     F8: Nested VMWEs should be annotated as in train
     This filter is global. It lets a candidate match pass only if this match is not nested in another match of the same multiset of lemmata in the given sentence.
@@ -281,5 +277,5 @@ class F8(Filter):
     def add_example(self, data: F8Data, mwe: ExampleType):
         return None
 
-    def default_data() -> F8Data:
+    def default_data(self) -> F8Data:
         return None
