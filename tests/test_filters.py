@@ -1,296 +1,244 @@
-import unittest
-
-# from multiset import Multiset
+import pytest
 from spacy import load
-
-# from spacy.tokens import Doc
 from mwe_detector.filters import F1, F2, F3, F4, F5, F6, F7, ExampleType
 
 nlp = load("en_core_web_sm")
 
 
-class TestF1(unittest.TestCase):
-    def setUp(self):
-        self.filter = F1()
-        self.doc1 = nlp("The quick brown fox jumps over the lazy dog.")
-        self.doc2 = nlp("Time flies like an arrow; fruit flies like a banana.")
-
-    def test_add_example(self):
-        data = self.filter.default_data()
-        example = ExampleType(
-            lemma="example1",
-            lemmas=["quick", "brown", "fox"],
-            example=self.doc1,
-            match_idx=(1, 2, 3),
-            pos="VERB",
-        )
-
-        self.filter.add_example(data, example)
-        self.assertEqual(len(data), 1)  # type: ignore
-        self.assertEqual(data[0], ["ADJ", "ADJ", "NOUN"])  # type: ignore
-
-    def test_filter(self):
-        data = self.filter.default_data()
-        example = ExampleType(
-            lemma="example1",
-            lemmas=["quick", "brown", "fox"],
-            example=self.doc1,
-            match_idx=(1, 2, 3),
-            pos="VERB",
-        )
-        self.filter.add_example(data, example)
-
-        match_idx = (1, 2, 3)
-        result = self.filter.filter(data, self.doc1, match_idx)
-        self.assertTrue(result)
-
-        match_idx = (0, 1, 2)
-        result = self.filter.filter(data, self.doc1, match_idx)
-        self.assertFalse(result)
-
-        match_idx = (2, 3, 5)
-        result = self.filter.filter(data, self.doc2, match_idx)
-        self.assertFalse(result)
+@pytest.fixture
+def setup_F1():
+    filter = F1()
+    doc1 = nlp("The quick brown fox jumps over the lazy dog.")
+    doc2 = nlp("Time flies like an arrow; fruit flies like a banana.")
+    return filter, doc1, doc2
 
 
-class TestF2(unittest.TestCase):
-    def setUp(self):
-        self.filter = F2()
-        self.doc1 = nlp("The quick brown fox jumps over the lazy dog.")
-        self.doc2 = nlp("Time flies like an arrow; fruit flies like a banana.")
+def test_F1_add_example(setup_F1):
+    filter, doc1, doc2 = setup_F1
+    data = filter.default_data()
+    example = ExampleType(
+        lemma="example1",
+        lemmas=["quick", "brown", "fox"],
+        example=doc1,
+        match_idx=(1, 2, 3),
+        pos="VERB",
+    )
 
-    def test_add_example(self):
-        data = self.filter.default_data()
-        example = ExampleType(
-            lemma="example2",
-            lemmas=["jumps", "over", "the"],
-            example=self.doc1,
-            match_idx=(4, 5, 6),
-            pos="VERB",
-        )
-
-        self.filter.add_example(data, example)
-        self.assertEqual(len(data), 1)  # type: ignore
-        self.assertEqual(data[0], ["VERB", "ADP", "DET"])  # type: ignore
-
-    def test_filter(self):
-        data = self.filter.default_data()
-        example = ExampleType(
-            lemma="example2",
-            lemmas=["jumps", "over", "the"],
-            example=self.doc1,
-            match_idx=(4, 5, 6),
-            pos="VERB",
-        )
-        self.filter.add_example(data, example)
-
-        match_idx = (4, 5, 6)
-        result = self.filter.filter(data, self.doc1, match_idx)
-        self.assertTrue(result)
-
-        match_idx = (4, 6, 5)
-        result = self.filter.filter(data, self.doc1, match_idx)
-        self.assertFalse(result)
-
-        match_idx = (2, 3, 5)
-        result = self.filter.filter(data, self.doc2, match_idx)
-        self.assertFalse(result)
+    filter.add_example(data, example)
+    assert len(data) == 1
+    assert data[0] == ["ADJ", "ADJ", "NOUN"]
 
 
-class TestF3(unittest.TestCase):
-    def setUp(self):
-        self.filter = F3()
-        self.doc1 = nlp("The quick brown fox jumps over the lazy dog.")
-        self.doc2 = nlp("Time flies like an arrow; fruit flies like a banana.")
+def test_F1_filter(setup_F1):
+    filter, doc1, doc2 = setup_F1
+    data = filter.default_data()
+    example = ExampleType(
+        lemma="example1",
+        lemmas=["quick", "brown", "fox"],
+        example=doc1,
+        match_idx=(1, 2, 3),
+        pos="VERB",
+    )
+    filter.add_example(data, example)
 
-    def test_add_example(self):
-        data = self.filter.default_data()
-        example = ExampleType(
-            lemma="example3",
-            lemmas=["The", "fox", "jumps"],
-            example=self.doc1,
-            match_idx=(0, 3, 4),
-            pos="VERB",
-        )
+    match_idx = (1, 2, 3)
+    result = filter.filter(data, doc1, match_idx)
+    assert result
 
-        self.filter.add_example(data, example)
-        self.assertEqual(len(data), 1)  # type: ignore
-        # Here we expect all the POS tags from "The" to "jumps", inclusive
-        self.assertEqual(data[0], ["DET", "ADJ", "ADJ", "NOUN", "VERB"])  # type: ignore
+    match_idx = (0, 1, 2)
+    result = filter.filter(data, doc1, match_idx)
+    assert not result
 
-    def test_filter(self):
-        data = self.filter.default_data()
-        example = ExampleType(
-            lemma="example3",
-            lemmas=["The", "fox", "jumps"],
-            example=self.doc1,
-            match_idx=(0, 3, 4),
-            pos="VERB",
-        )
-        self.filter.add_example(data, example)
-
-        match_idx = (0, 3, 4)
-        result = self.filter.filter(data, self.doc1, match_idx)
-        self.assertTrue(result)
-
-        match_idx = (0, 4, 3)
-        result = self.filter.filter(data, self.doc1, match_idx)
-        self.assertTrue(result)
-
-        match_idx = (0, 2, 4)
-        result = self.filter.filter(data, self.doc2, match_idx)
-        self.assertFalse(result)
+    match_idx = (2, 3, 5)
+    result = filter.filter(data, doc2, match_idx)
+    assert not result
 
 
-class TestF4(unittest.TestCase):
-    def setUp(self):
-        self.filter = F4()
-        self.doc1 = nlp("The quick brown fox jumps over the lazy dog.")
-        self.doc2 = nlp("Time flies like an arrow; fruit flies like a banana.")
-
-    def test_add_example(self):
-        data = self.filter.default_data()
-        example = ExampleType(
-            lemma="example4",
-            lemmas=["The", "jumps", "dog"],
-            example=self.doc1,
-            match_idx=(0, 4, 8),
-            pos="VERB",
-        )
-
-        self.filter.add_example(data, example)
-        self.assertEqual(len(data), 1)  # type: ignore
-        # The largest discontinuity here is from "jumps" to "dog" which is 4
-        self.assertEqual(data[0], 4)  # type: ignore
-
-    def test_filter(self):
-        data = self.filter.default_data()
-        example = ExampleType(
-            lemma="example4",
-            lemmas=["The", "jumps", "dog"],
-            example=self.doc1,
-            match_idx=(0, 4, 8),
-            pos="VERB",
-        )
-        self.filter.add_example(data, example)
-
-        # Test a positive match with same discontinuity
-        match_idx = (0, 4, 8)
-        result = self.filter.filter(data, self.doc1, match_idx)
-        self.assertTrue(result)
-
-        # Test a negative match with a larger discontinuity
-        match_idx = (0, 3, 8)
-        result = self.filter.filter(data, self.doc1, match_idx)
-        self.assertFalse(result)
-
-        # Test a negative match with a different document and larger discontinuity
-        match_idx = (0, 2, 8)
-        result = self.filter.filter(data, self.doc2, match_idx)
-        self.assertFalse(result)
+@pytest.fixture
+def f2_doc1():
+    return nlp("The quick brown fox jumps over the lazy dog.")
 
 
-class TestF5(unittest.TestCase):
-    def setUp(self):
-        self.filter = F5()
-        self.doc = nlp(
-            "Time flies like an arrow; fruit flies like a banana. People like these flies."
-        )
-
-    def test_filter(self):
-        # Multiple matches for the lemmata "flies", "like", and "banana"
-        match_idx1 = (1, 2, 10)  # "flies", "like", "banana" (Discontinuity of 7)
-        match_idx2 = (7, 8, 10)  # "flies", "like", "banana" (Discontinuity of 1)
-
-        # Only the second match should be approved by the filter since it has the least discontinuity
-        self.assertFalse(self.filter.filter(None, self.doc, match_idx1))  # type: ignore
-        self.assertTrue(self.filter.filter(None, self.doc, match_idx2))  # type: ignore
+@pytest.fixture
+def f2_doc2():
+    return nlp("Time flies like an arrow; fruit flies like a banana.")
 
 
-class TestF6(unittest.TestCase):
-    def setUp(self):
-        self.filter = F6()
-        self.doc = nlp("John, who lives in New York, likes apples.")
-
-    def test_two_token_connected(self):
-        # "John" and "likes" are connected (subject-verb relation)
-        match_idx = (0, 8)
-        self.assertTrue(self.filter.filter(None, self.doc, match_idx))  # type: ignore
-
-    def test_two_token_disconnected(self):
-        # "John" and "apples" are not directly connected
-        match_idx = (0, 9)
-        self.assertFalse(self.filter.filter(None, self.doc, match_idx))  # type: ignore
-
-    def test_two_token_grandparent(self):
-        # "John" and "who" have a grandparent relation
-        match_idx = (0, 2)
-        self.assertTrue(self.filter.filter(None, self.doc, match_idx))  # type: ignore
-
-    def test_two_token_greatgrandparent(self):
-        # "John" and "New" have a grandparent relation
-        match_idx = (0, 5)
-        self.assertFalse(self.filter.filter(None, self.doc, match_idx))  # type: ignore
-
-    def test_multi_token_connected(self):
-        # "John", "lives", "in", "New", "York" form a connected subgraph
-        match_idx = (0, 3, 4, 5, 6)
-        self.assertTrue(self.filter.filter(None, self.doc, match_idx))  # type: ignore
-
-        # "John", "likes", "apples" do not form a connected subgraph
-        match_idx = (0, 8, 9)
-        self.assertTrue(self.filter.filter(None, self.doc, match_idx))  # type: ignore
-
-    def test_multi_token_disconnected(self):
-        # "John", "lives", "in", "apples" do not form a connected subgraph
-        match_idx = (0, 3, 4, 9)
-        self.assertFalse(self.filter.filter(None, self.doc, match_idx))  # type: ignore
+@pytest.fixture
+def f3_doc1(f2_doc1):
+    return f2_doc1
 
 
-class TestF7(unittest.TestCase):
-    def setUp(self):
-        self.filter = F7()
-        self.doc = nlp("The quick brown fox jumps over the lazy dogs.")
-
-    def test_no_nouns(self):
-        # "quick" and "brown" have no nouns
-        match_idx = (1, 2)
-        self.assertTrue(self.filter.filter([], self.doc, match_idx))  # type: ignore
-
-    def test_multiple_nouns(self):
-        # "fox" and "dogs" have multiple nouns
-        match_idx = (3, 8)
-        self.assertTrue(self.filter.filter([], self.doc, match_idx))  # type: ignore
-
-    def test_one_noun_observed_inflection(self):
-        # Let's train the filter with the inflection of "dogs"
-        example = ExampleType(
-            lemma="test", lemmas=["dogs"], example=self.doc, match_idx=(8,), pos="NOUN"
-        )
-        noun_morphs = self.filter.default_data()
-        self.filter.add_example(noun_morphs, example)  # type: ignore
-
-        # "dogs" has one noun with observed inflection
-        match_idx = (8,)
-        self.assertTrue(self.filter.filter(noun_morphs, self.doc, match_idx))
-
-    def test_one_noun_unobserved_inflection(self):
-        # Let's train the filter with the inflection of "dogs"
-        example = ExampleType(
-            lemma="test", lemmas=["dogs"], example=self.doc, match_idx=(8,), pos="NOUN"
-        )
-        noun_morphs = self.filter.default_data()
-        self.filter.add_example(noun_morphs, example)  # type: ignore
-
-        # "fox" has one noun with unobserved inflection
-        match_idx = (3,)
-        self.assertFalse(self.filter.filter(noun_morphs, self.doc, match_idx))
-
-    def test_one_noun_no_observed_inflection(self):
-        # We did not train the filter with the inflection of "fox"
-        match_idx = (3,)
-        self.assertFalse(self.filter.filter([], self.doc, match_idx))  # type: ignore
+@pytest.fixture
+def f3_doc2(f2_doc2):
+    return f2_doc2
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_f2_add_example(f2_doc1):
+    f2_filter = F2()
+    data = f2_filter.default_data()
+    example = ExampleType(
+        lemma="example2",
+        lemmas=["jumps", "over", "the"],
+        example=f2_doc1,
+        match_idx=(4, 5, 6),
+        pos="VERB",
+    )
+    f2_filter.add_example(data, example)
+    assert len(data) == 1  # type: ignore
+    assert data[0] == ["VERB", "ADP", "DET"]  # type: ignore
+
+
+def test_f2_filter(f2_doc1, f2_doc2):
+    f2_filter = F2()
+    data = f2_filter.default_data()
+    example = ExampleType(
+        lemma="example2",
+        lemmas=["jumps", "over", "the"],
+        example=f2_doc1,
+        match_idx=(4, 5, 6),
+        pos="VERB",
+    )
+    f2_filter.add_example(data, example)
+
+    result = f2_filter.filter(data, f2_doc1, (4, 5, 6))
+    assert result
+
+    result = f2_filter.filter(data, f2_doc1, (4, 6, 5))
+    assert not result
+
+    result = f2_filter.filter(data, f2_doc2, (2, 3, 5))
+    assert not result
+
+
+def test_f3_add_example(f3_doc1):
+    f3_filter = F3()
+    data = f3_filter.default_data()
+    example = ExampleType(
+        lemma="example3",
+        lemmas=["The", "fox", "jumps"],
+        example=f3_doc1,
+        match_idx=(0, 3, 4),
+        pos="VERB",
+    )
+    f3_filter.add_example(data, example)
+    assert len(data) == 1  # type: ignore
+    assert data[0] == ["DET", "ADJ", "ADJ", "NOUN", "VERB"]  # type: ignore
+
+
+def test_f3_filter(f3_doc1, f3_doc2):
+    f3_filter = F3()
+    data = f3_filter.default_data()
+    example = ExampleType(
+        lemma="example3",
+        lemmas=["The", "fox", "jumps"],
+        example=f3_doc1,
+        match_idx=(0, 3, 4),
+        pos="VERB",
+    )
+    f3_filter.add_example(data, example)
+
+    result = f3_filter.filter(data, f3_doc1, (0, 3, 4))
+    assert result
+
+    result = f3_filter.filter(data, f3_doc1, (0, 4, 3))
+    assert result
+
+    result = f3_filter.filter(data, f3_doc2, (0, 2, 4))
+    assert not result
+
+
+@pytest.fixture
+def f4_doc1():
+    return nlp("The quick brown fox jumps over the lazy dog.")
+
+
+@pytest.fixture
+def f4_doc2():
+    return nlp("Time flies like an arrow; fruit flies like a banana.")
+
+
+@pytest.fixture
+def f5_doc():
+    return nlp(
+        "Time flies like an arrow; fruit flies like a banana. People like these flies."
+    )
+
+
+@pytest.fixture
+def f6_doc():
+    return nlp("John, who lives in New York, likes apples.")
+
+
+@pytest.fixture
+def f7_doc():
+    return nlp("The quick brown fox jumps over the lazy dogs.")
+
+
+def test_f4_add_example(f4_doc1):
+    f4_filter = F4()
+    data = f4_filter.default_data()
+    example = ExampleType(
+        lemma="example4",
+        lemmas=["The", "jumps", "dog"],
+        example=f4_doc1,
+        match_idx=(0, 4, 8),
+        pos="VERB",
+    )
+
+    f4_filter.add_example(data, example)
+    assert len(data) == 1  # type: ignore
+    assert data[0] == 4  # type: ignore
+
+
+def test_f4_filter(f4_doc1, f4_doc2):
+    f4_filter = F4()
+    data = f4_filter.default_data()
+    example = ExampleType(
+        lemma="example4",
+        lemmas=["The", "jumps", "dog"],
+        example=f4_doc1,
+        match_idx=(0, 4, 8),
+        pos="VERB",
+    )
+    f4_filter.add_example(data, example)
+
+    assert f4_filter.filter(data, f4_doc1, (0, 4, 8))
+    assert not f4_filter.filter(data, f4_doc1, (0, 3, 8))
+    assert not f4_filter.filter(data, f4_doc2, (0, 2, 8))
+
+
+def test_f5_filter(f5_doc):
+    f5_filter = F5()
+
+    assert not f5_filter.filter(None, f5_doc, (1, 2, 10))  # type: ignore
+    assert f5_filter.filter(None, f5_doc, (7, 8, 10))  # type: ignore
+
+
+def test_f6_filter(f6_doc):
+    f6_filter = F6()
+
+    assert f6_filter.filter(None, f6_doc, (0, 8))  # type: ignore
+    assert not f6_filter.filter(None, f6_doc, (0, 9))  # type: ignore
+    assert f6_filter.filter(None, f6_doc, (0, 2))  # type: ignore
+    assert not f6_filter.filter(None, f6_doc, (0, 5))  # type: ignore
+    assert f6_filter.filter(None, f6_doc, (0, 3, 4, 5, 6))  # type: ignore
+    assert f6_filter.filter(None, f6_doc, (0, 8, 9))  # type: ignore
+    assert not f6_filter.filter(None, f6_doc, (0, 3, 4, 9))  # type: ignore
+
+
+def test_f7_filter(f7_doc):
+    f7_filter = F7()
+
+    assert f7_filter.filter([], f7_doc, (1, 2))  # type: ignore
+    assert f7_filter.filter([], f7_doc, (3, 8))  # type: ignore
+
+    example = ExampleType(
+        lemma="test", lemmas=["dogs"], example=f7_doc, match_idx=(8,), pos="NOUN"
+    )
+    noun_morphs = f7_filter.default_data()
+    f7_filter.add_example(noun_morphs, example)
+
+    assert f7_filter.filter(noun_morphs, f7_doc, (8,))
+    assert not f7_filter.filter(noun_morphs, f7_doc, (3,))
+    assert not f7_filter.filter([], f7_doc, (3,))  # type: ignore
