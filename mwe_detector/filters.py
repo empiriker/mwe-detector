@@ -62,7 +62,8 @@ class F1(Filter[F1Data]):
             ]
         )
 
-    def default_data(self) -> F1Data:
+    @staticmethod
+    def default_data() -> F1Data:
         return []
 
 
@@ -87,7 +88,8 @@ class F2(Filter[F2Data]):
         match_pos = self._get_pos(sent, match_idx)
         return any([match_pos == pos_order for pos_order in pos_orders])
 
-    def default_data(self) -> F2Data:
+    @staticmethod
+    def default_data() -> F2Data:
         return []
 
 
@@ -112,7 +114,8 @@ class F3(Filter[F3Data]):
         match_pos = self._get_pos(sent, match_idx)
         return any([match_pos == pos_order for pos_order in pos_orders])
 
-    def default_data(self) -> F3Data:
+    @staticmethod
+    def default_data() -> F3Data:
         return []
 
 
@@ -142,7 +145,8 @@ class F4(Filter[F4Data]):
         match_discontinuity = self._get_discontinuity(match_idx)
         return match_discontinuity <= max(discontinuities)
 
-    def default_data(self) -> F4Data:
+    @staticmethod
+    def default_data() -> F4Data:
         return []
 
 
@@ -184,7 +188,8 @@ class F5(Filter[F5Data]):
     def add_example(self, data: F5Data, mwe: ExampleType):
         return None
 
-    def default_data(self) -> F5Data:
+    @staticmethod
+    def default_data() -> F5Data:
         return None
 
 
@@ -225,7 +230,8 @@ class F6(Filter[F6Data]):
     def add_example(self, data: F6Data, mwe: ExampleType):
         return None
 
-    def default_data(self) -> F6Data:
+    @staticmethod
+    def default_data() -> F6Data:
         return None
 
 
@@ -258,7 +264,8 @@ class F7(Filter[F7Data]):
         noun = nouns[0]
         return noun.morph.to_json() in noun_morphs
 
-    def default_data(self) -> F7Data:
+    @staticmethod
+    def default_data() -> F7Data:
         return []
 
 
@@ -277,5 +284,6 @@ class F8(Filter[F8Data]):
     def add_example(self, data: F8Data, mwe: ExampleType):
         return None
 
-    def default_data(self) -> F8Data:
+    @staticmethod
+    def default_data() -> F8Data:
         return None

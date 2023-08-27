@@ -14,7 +14,7 @@ from typing import List, TypedDict, Tuple, DefaultDict
 from pathlib import Path
 
 
-from mwe_detector.filters import (
+from .filters import (
     F1Data,
     F1,
     F2Data,
