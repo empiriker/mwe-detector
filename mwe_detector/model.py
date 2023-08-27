@@ -3,10 +3,10 @@ from spacy.tokens import Doc, Token
 from spacy.language import Language
 import srsly
 from spacy.util import ensure_path
+from .utils import find_candidate_matches, find_continuous_candidate_matches
 
 # Utilities
 from collections import defaultdict
-from itertools import product
 import os
 
 # Type hints
@@ -80,6 +80,7 @@ class MWEDetectorData:
             }
         )
         self.active_filters = ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"]
+        self.continuous_POS = ["ADJ", "ADV", "ADP", "CONJ", "INTJ", "NOUN", "PROPN"]
 
     def to_dict(self):
         return {"mwes": self.mwes, "active_filters": self.active_filters}
@@ -166,17 +167,17 @@ class MWEDetector:
             example_as_example_type = self._doc_to_example_type(example)
             self.train_from_example(example_as_example_type)
 
-    def _find_candidate_matches(self, lemmas: List[str], sent_doc: Doc):
-        single_matches = []
-        for lemma in lemmas:
-            matched_tokens = list(
-                filter(lambda x: x.lemma_.lower() == lemma.lower(), sent_doc)
-            )
-            if len(matched_tokens) == 0:
-                return []
-            single_matches.append([tok.i for tok in matched_tokens])
+    # def _find_candidate_matches(self, lemmas: List[str], sent_doc: Doc):
+    #     single_matches : List[List[int,]] = []
+    #     for lemma in lemmas:
+    #         matched_tokens = list(
+    #             filter(lambda x: x.lemma_.lower() == lemma.lower(), sent_doc)
+    #         )
+    #         if len(matched_tokens) == 0:
+    #             return []
+    #         single_matches.append([tok.i for tok in matched_tokens])
 
-        return list(product(*single_matches))
+    #     return list(product(*single_matches))
 
     def apply_filters(
         self, doc: Doc, mwe, match_idx
@@ -191,10 +192,16 @@ class MWEDetector:
 
     def __call__(self, doc: Doc) -> Doc:
         predictions = ["*" for _ in doc]
-        count = 0
+        count: int = 0
         for mwe_key, mwe in self.mwes.items():
             lemmas = mwe["lemmas"]
-            matches = self._find_candidate_matches(lemmas, doc)
+            pos = mwe["pos"]
+            token_lemmas = [tok.lemma_ for tok in doc]
+            matches = (
+                find_continuous_candidate_matches(lemmas, token_lemmas)
+                if pos in self._data.continuous_POS
+                else find_candidate_matches(lemmas, token_lemmas)
+            )
             for match_idx in matches:
                 if match_idx == ():
                     continue
