@@ -10,7 +10,9 @@ from itertools import product
 import os
 
 # Type hints
-from typing import List, Dict, TypedDict
+from typing import List, TypedDict, Tuple, DefaultDict
+from pathlib import Path
+
 
 from mwe_detector.filters import (
     F1Data,
@@ -49,6 +51,7 @@ class Filters(TypedDict):
 
 
 class MWEType(TypedDict):
+    pos: str
     lemmas: List[str]
     f1: F1Data
     f2: F2Data
@@ -60,16 +63,11 @@ class MWEType(TypedDict):
     f8: F8Data
 
 
-class MWEDetectorData(TypedDict):
-    mwes: Dict[str, MWEType]
-    active_filters: List[str]
-
-
 class MWEDetectorData:
     def __init__(self):
-        self.mwes = defaultdict(
+        self.mwes: DefaultDict[str, MWEType] = defaultdict(
             lambda: {
-                "POS": "",
+                "pos": "",
                 "lemmas": [],
                 "f1": F1.default_data(),
                 "f2": F2.default_data(),
@@ -110,6 +108,8 @@ class MWEDetector:
             "f7": F7(),
             "f8": F8(),
         }
+        if not nlp.lang:
+            raise ValueError()
         self._lang = nlp.lang
 
     @property
@@ -146,6 +146,16 @@ class MWEDetector:
 
         return result
 
+    def train_from_example(self, example: ExampleType):
+        mwe_key = self._example_to_key(example)
+        self.mwes[mwe_key]["lemmas"] = example["lemmas"]
+        self.mwes[mwe_key]["pos"] = example["pos"]
+
+        for filter_key in self._filters.keys():
+            self._filters[filter_key].add_example(
+                self.mwes[mwe_key][filter_key], example
+            )
+
     def train(self, examples: List[Doc]):
         if not Doc.has_extension("mwe_lemma"):
             Doc.set_extension("mwe_lemma", default="")
@@ -154,14 +164,7 @@ class MWEDetector:
 
         for example in examples:
             example_as_example_type = self._doc_to_example_type(example)
-            mwe_key = self._example_to_key(example_as_example_type)
-            self.mwes[mwe_key]["lemmas"] = example_as_example_type["lemmas"]
-            self.mwes[mwe_key]["POS"] = example_as_example_type["pos"]
-
-            for filter_key in self._filters.keys():
-                self._filters[filter_key].add_example(
-                    self.mwes[mwe_key][filter_key], example_as_example_type
-                )
+            self.train_from_example(example_as_example_type)
 
     def _find_candidate_matches(self, lemmas: List[str], sent_doc: Doc):
         single_matches = []
@@ -175,6 +178,17 @@ class MWEDetector:
 
         return list(product(*single_matches))
 
+    def apply_filters(
+        self, doc: Doc, mwe, match_idx
+    ) -> Tuple[bool, bool, bool, bool, bool, bool, bool, bool]:
+        filter_results = tuple(
+            [
+                self._filters[f_key].filter(mwe[f_key], doc, match_idx)
+                for f_key in self.active_filters
+            ]
+        )
+        return filter_results
+
     def __call__(self, doc: Doc) -> Doc:
         predictions = ["*" for _ in doc]
         count = 0
@@ -184,10 +198,7 @@ class MWEDetector:
             for match_idx in matches:
                 if match_idx == ():
                     continue
-                filter_results = [
-                    self._filters[f_key].filter(mwe[f_key], doc, match_idx)
-                    for f_key in self.active_filters
-                ]
+                filter_results = self.apply_filters(doc, mwe, match_idx)
                 if all(filter_results):
                     count += 1
                     for idx in match_idx:
@@ -204,19 +215,18 @@ class MWEDetector:
         return doc
 
     def to_disk(self, path: str, exclude=tuple()):
-        path = ensure_path(path)
-        if not path.exists():
-            path.mkdir()
+        path_save: Path = ensure_path(path)
+        if not path_save.exists():
+            path_save.mkdir()
 
         srsly.write_json(
             os.path.join(path, self._lang + "_data.json"), self._data.to_dict()
         )
 
-    def from_disk(self, path, exclude=tuple()):
-        # path = ensure_path(path)
-        filename = os.path.join(path, self._lang + "_data.json")
-        print(filename)
-        data = srsly.read_json(filename)
+    def from_disk(self, path: str, exclude=tuple()):
+        file_path = os.path.join(path, self._lang + "_data.json")
+        path_save = ensure_path(file_path)
+        data = srsly.read_json(path_save)
 
         self._data.from_dict(data)
         return self
