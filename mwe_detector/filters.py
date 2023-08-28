@@ -261,7 +261,10 @@ class F7(Filter[F7Data]):
         nouns = self._get_nouns(sent, match_idx)
         if not len(nouns) == 1:
             return True
-        noun_number = nouns[0].morph.get("Number")[0]  # type: ignore
+        noun_numbers = nouns[0].morph.get("Number")  # type: ignore
+        if not noun_numbers:
+            return False
+        noun_number = noun_numbers[0]
 
         return noun_number in noun_morphs
 
