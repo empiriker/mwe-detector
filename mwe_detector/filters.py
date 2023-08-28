@@ -253,16 +253,17 @@ class F7(Filter[F7Data]):
             return True
         noun = nouns[0]
 
-        noun_morph = noun.morph.to_json()
-        if noun_morph not in noun_morphs:
-            noun_morphs.append(noun_morph)
+        noun_number = noun.morph.get("Number")  # type: ignore
+        if noun_number not in noun_morphs:
+            noun_morphs.extend(noun_number)
 
     def filter(self, noun_morphs: F7Data, sent: Doc, match_idx: Tuple[int, ...]):
         nouns = self._get_nouns(sent, match_idx)
         if not len(nouns) == 1:
             return True
-        noun = nouns[0]
-        return noun.morph.to_json() in noun_morphs
+        noun_number = nouns[0].morph.get("Number")[0]  # type: ignore
+
+        return noun_number in noun_morphs
 
     @staticmethod
     def default_data() -> F7Data:
