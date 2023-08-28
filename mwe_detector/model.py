@@ -8,6 +8,7 @@ from .utils import find_candidate_matches, find_continuous_candidate_matches
 # Utilities
 from collections import defaultdict
 import os
+import ujson as json
 
 # Type hints
 from typing import List, TypedDict, Tuple, DefaultDict, Dict
@@ -80,7 +81,25 @@ class MWEDetectorData:
             }
         )
         self.active_filters: DefaultDict[str, List[str]] = defaultdict(
-            lambda: ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"]
+            lambda: ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+            {
+                "ADJ": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+                "ADP": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+                "ADV": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+                "AUX": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+                "CONJ": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+                "DET": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+                "INTJ": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+                "NOUN": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+                "NUM": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+                "PART": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+                "PRON": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+                "PROPN": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+                "PUNCT": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+                "SYM": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+                "VERB": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+                "X": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+            },
         )
         self.continuous_POS = ["ADJ", "ADV", "ADP", "CONJ", "INTJ", "NOUN", "PROPN"]
 
@@ -138,15 +157,57 @@ class MWEDetector:
         # lemmas.sort()
         return example["lemma"] + ":" + example["pos"]
 
-    def _doc_to_example_type(self, doc: Doc):
-        match_idx = tuple([i for i, tok in enumerate(doc) if tok._.wikt_mwe != "*"])
-        lemmas = [doc[i].lemma_ for i in match_idx]
+    # def _doc_to_example_type(self, doc: Doc):
+    #     match_idx = tuple([i for i, tok in enumerate(doc) if tok._.wikt_mwe != "*"])
+    #     lemmas = [doc[i].lemma_ for i in match_idx]
+    #     result = ExampleType(
+    #         example=doc,
+    #         lemma=doc._.mwe_lemma,
+    #         match_idx=match_idx,
+    #         lemmas=lemmas,
+    #         pos=doc._.mwe_pos,
+    #     )
+
+    #     return result
+
+    def _sort_lemmas_by_rank(self, lemmas: list[str], rank_dict, ascending=False):
+        if rank_dict is None:
+            return lemmas
+
+        # Function to get the rank of a lemma
+        def get_rank(lemma: str):
+            if lemma in rank_dict:
+                return rank_dict[lemma]
+            elif lemma.isalpha():
+                return 999999
+            else:
+                return 0  # Punctuation marks or numbers are rank 0
+
+        # Sort the lemmas based on their ranks
+        sorted_lemmas = sorted(lemmas, key=get_rank, reverse=not ascending)
+
+        return sorted_lemmas
+
+    def _doc_to_example_type(self, doc: Doc, mwe_label: str):
+        match_idx = tuple(
+            [i for i, tok in enumerate(doc) if mwe_label in tok._.wikt_mwe]
+        )
+        with open(
+            "/home/till/VSCode/mwe-detection/mwe_manager/input/frequencies/Lexique383_rank.json"
+        ) as f:
+            rank_dict = json.load(f)
+        lemmas = self._sort_lemmas_by_rank(
+            [doc[i].lemma_ for i in match_idx], rank_dict
+        )
+
+        mwe_lemma = mwe_label.split(":")[1]
+        mwe_pos = mwe_label.split(":")[2]
         result = ExampleType(
             example=doc,
-            lemma=doc._.mwe_lemma,
+            lemma=mwe_lemma,
             match_idx=match_idx,
             lemmas=lemmas,
-            pos=doc._.mwe_pos,
+            pos=mwe_pos,
         )
 
         return result
@@ -161,15 +222,28 @@ class MWEDetector:
                 self.mwes[mwe_key][filter_key], example
             )
 
-    def train(self, examples: List[Doc]):
-        if not Doc.has_extension("mwe_lemma"):
-            Doc.set_extension("mwe_lemma", default="")
-        if not Doc.has_extension("mwe_pos"):
-            Doc.set_extension("mwe_pos", default="")
+    # def train(self, examples: List[Doc]):
+    #     if not Doc.has_extension("mwe_lemma"):
+    #         Doc.set_extension("mwe_lemma", default="")
+    #     if not Doc.has_extension("mwe_pos"):
+    #         Doc.set_extension("mwe_pos", default="")
 
-        for example in examples:
-            example_as_example_type = self._doc_to_example_type(example)
-            self.train_from_example(example_as_example_type)
+    #     for example in examples:
+    #         example_as_example_type = self._doc_to_example_type(example)
+    #         self.train_from_example(example_as_example_type)
+
+    def train(self, examples: List[Doc]):
+        for doc in examples:
+            mwes_present = set(
+                sum(
+                    [tok._.wikt_mwe.split(",") for tok in doc if tok._.wikt_mwe != "*"],
+                    [],
+                )
+            )
+            for mwe in mwes_present:
+                example = self._doc_to_example_type(doc, mwe)
+
+                self.train_from_example(example)
 
     def apply_filters(
         self, doc: Doc, mwe: MWEType, match_idx
