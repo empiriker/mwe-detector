@@ -1,526 +1,125 @@
 {
-  "mwes":{
-    ":":{
-      "pos":"",
-      "lemmas":[
-        "vice",
-        "versa"
+  "mwes": {
+    ":": {
+      "pos": "",
+      "lemmas": ["vice", "versa"],
+      "f1": [
+        ["ADP", "VERB"],
+        ["ADV", "VERB"],
+        ["NOUN", "NOUN"],
+        ["ADP", "PROPN"],
+        ["ADP", "NOUN", "VERB"],
+        ["NOUN", "VERB"],
+        ["ADJ", "VERB"],
+        ["ADJ", "NOUN"],
+        ["NOUN", "PROPN"],
+        ["ADP", "ADV"],
+        ["PROPN", "PROPN"],
+        ["ADP", "NOUN", "PROPN"],
+        ["ADP", "NOUN"],
+        ["VERB", "VERB"],
+        ["SCONJ", "VERB"],
+        ["PROPN", "VERB"],
+        ["ADJ", "ADP"],
+        ["ADP", "ADP"],
+        ["ADV", "NOUN"],
+        ["ADP", "ADV", "VERB"],
+        ["AUX", "VERB"],
+        ["ADP", "ADP", "VERB"],
+        ["ADP", "AUX", "VERB"],
+        ["PART", "VERB", "VERB"],
+        ["ADP", "AUX", "NOUN"],
+        ["PRON", "VERB"],
+        ["PART", "PART", "VERB"],
+        ["DET", "NOUN", "VERB"],
+        ["ADV", "PART", "VERB"],
+        ["NUM", "NUM"]
       ],
-      "f1":[
-        [
-          "ADP",
-          "VERB"
-        ],
-        [
-          "ADV",
-          "VERB"
-        ],
-        [
-          "NOUN",
-          "NOUN"
-        ],
-        [
-          "ADP",
-          "PROPN"
-        ],
-        [
-          "ADP",
-          "NOUN",
-          "VERB"
-        ],
-        [
-          "NOUN",
-          "VERB"
-        ],
-        [
-          "ADJ",
-          "VERB"
-        ],
-        [
-          "ADJ",
-          "NOUN"
-        ],
-        [
-          "NOUN",
-          "PROPN"
-        ],
-        [
-          "ADP",
-          "ADV"
-        ],
-        [
-          "PROPN",
-          "PROPN"
-        ],
-        [
-          "ADP",
-          "NOUN",
-          "PROPN"
-        ],
-        [
-          "ADP",
-          "NOUN"
-        ],
-        [
-          "VERB",
-          "VERB"
-        ],
-        [
-          "SCONJ",
-          "VERB"
-        ],
-        [
-          "PROPN",
-          "VERB"
-        ],
-        [
-          "ADJ",
-          "ADP"
-        ],
-        [
-          "ADP",
-          "ADP"
-        ],
-        [
-          "ADV",
-          "NOUN"
-        ],
-        [
-          "ADP",
-          "ADV",
-          "VERB"
-        ],
-        [
-          "AUX",
-          "VERB"
-        ],
-        [
-          "ADP",
-          "ADP",
-          "VERB"
-        ],
-        [
-          "ADP",
-          "AUX",
-          "VERB"
-        ],
-        [
-          "PART",
-          "VERB",
-          "VERB"
-        ],
-        [
-          "ADP",
-          "AUX",
-          "NOUN"
-        ],
-        [
-          "PRON",
-          "VERB"
-        ],
-        [
-          "PART",
-          "PART",
-          "VERB"
-        ],
-        [
-          "DET",
-          "NOUN",
-          "VERB"
-        ],
-        [
-          "ADV",
-          "PART",
-          "VERB"
-        ],
-        [
-          "NUM",
-          "NUM"
-        ]
+      "f2": [
+        ["VERB", "ADP"],
+        ["VERB", "ADV"],
+        ["NOUN", "NOUN"],
+        ["PROPN", "ADP"],
+        ["VERB", "ADP", "NOUN"],
+        ["VERB", "NOUN", "ADP"],
+        ["VERB", "NOUN"],
+        ["VERB", "ADJ"],
+        ["ADJ", "NOUN"],
+        ["PROPN", "NOUN"],
+        ["ADV", "ADP"],
+        ["PROPN", "PROPN"],
+        ["PROPN", "ADP", "NOUN"],
+        ["NOUN", "VERB"],
+        ["NOUN", "ADP"],
+        ["VERB", "VERB"],
+        ["VERB", "SCONJ"],
+        ["VERB", "PROPN"],
+        ["ADJ", "ADP"],
+        ["ADP", "ADP"],
+        ["ADV", "NOUN"],
+        ["ADV", "VERB"],
+        ["NOUN", "PROPN"],
+        ["VERB", "ADV", "ADP"],
+        ["ADP", "VERB", "ADV"],
+        ["AUX", "VERB"],
+        ["VERB", "ADP", "ADP"],
+        ["AUX", "VERB", "ADP"],
+        ["VERB", "PART", "VERB"],
+        ["AUX", "ADP", "NOUN"],
+        ["VERB", "PRON"],
+        ["ADP", "VERB"],
+        ["PART", "PART", "VERB"],
+        ["VERB", "DET", "NOUN"],
+        ["NOUN", "ADV"],
+        ["ADV", "PART", "VERB"],
+        ["NUM", "NUM"]
       ],
-      "f2":[
-        [
-          "VERB",
-          "ADP"
-        ],
-        [
-          "VERB",
-          "ADV"
-        ],
-        [
-          "NOUN",
-          "NOUN"
-        ],
-        [
-          "PROPN",
-          "ADP"
-        ],
-        [
-          "VERB",
-          "ADP",
-          "NOUN"
-        ],
-        [
-          "VERB",
-          "NOUN",
-          "ADP"
-        ],
-        [
-          "VERB",
-          "NOUN"
-        ],
-        [
-          "VERB",
-          "ADJ"
-        ],
-        [
-          "ADJ",
-          "NOUN"
-        ],
-        [
-          "PROPN",
-          "NOUN"
-        ],
-        [
-          "ADV",
-          "ADP"
-        ],
-        [
-          "PROPN",
-          "PROPN"
-        ],
-        [
-          "PROPN",
-          "ADP",
-          "NOUN"
-        ],
-        [
-          "NOUN",
-          "VERB"
-        ],
-        [
-          "NOUN",
-          "ADP"
-        ],
-        [
-          "VERB",
-          "VERB"
-        ],
-        [
-          "VERB",
-          "SCONJ"
-        ],
-        [
-          "VERB",
-          "PROPN"
-        ],
-        [
-          "ADJ",
-          "ADP"
-        ],
-        [
-          "ADP",
-          "ADP"
-        ],
-        [
-          "ADV",
-          "NOUN"
-        ],
-        [
-          "ADV",
-          "VERB"
-        ],
-        [
-          "NOUN",
-          "PROPN"
-        ],
-        [
-          "VERB",
-          "ADV",
-          "ADP"
-        ],
-        [
-          "ADP",
-          "VERB",
-          "ADV"
-        ],
-        [
-          "AUX",
-          "VERB"
-        ],
-        [
-          "VERB",
-          "ADP",
-          "ADP"
-        ],
-        [
-          "AUX",
-          "VERB",
-          "ADP"
-        ],
-        [
-          "VERB",
-          "PART",
-          "VERB"
-        ],
-        [
-          "AUX",
-          "ADP",
-          "NOUN"
-        ],
-        [
-          "VERB",
-          "PRON"
-        ],
-        [
-          "ADP",
-          "VERB"
-        ],
-        [
-          "PART",
-          "PART",
-          "VERB"
-        ],
-        [
-          "VERB",
-          "DET",
-          "NOUN"
-        ],
-        [
-          "NOUN",
-          "ADV"
-        ],
-        [
-          "ADV",
-          "PART",
-          "VERB"
-        ],
-        [
-          "NUM",
-          "NUM"
-        ]
-      ],
-      "f3":[
-        [
-          "VERB",
-          "ADP"
-        ],
-        [
-          "VERB",
-          "ADV"
-        ],
-        [
-          "NOUN",
-          "PUNCT",
-          "NOUN"
-        ],
-        [
-          "PROPN",
-          "ADP"
-        ],
-        [
-          "VERB",
-          "ADP",
-          "NOUN"
-        ],
-        [
-          "VERB",
-          "NOUN",
-          "ADP"
-        ],
-        [
-          "VERB",
-          "NOUN"
-        ],
-        [
-          "NOUN",
-          "NOUN"
-        ],
-        [
-          "VERB",
-          "PRON",
-          "ADV"
-        ],
-        [
-          "VERB",
-          "PRON",
-          "ADJ"
-        ],
-        [
-          "VERB",
-          "ADJ",
-          "NOUN",
-          "ADV"
-        ],
-        [
-          "ADJ",
-          "NOUN"
-        ],
-        [
-          "VERB",
-          "PRON",
-          "NOUN",
-          "ADV"
-        ],
-        [
-          "PROPN",
-          "NOUN"
-        ],
-        [
-          "VERB",
-          "DET",
-          "NOUN"
-        ],
-        [
-          "VERB",
-          "PRON",
-          "ADP"
-        ],
-        [
-          "VERB",
-          "PRON",
-          "PRON",
-          "ADV"
-        ],
-        [
-          "ADV",
-          "ADP"
-        ],
-        [
-          "PROPN",
-          "PROPN"
-        ],
-        [
-          "PROPN",
-          "ADP",
-          "NOUN"
-        ],
-        [
-          "VERB",
-          "DET",
-          "NOUN",
-          "ADP"
-        ],
-        [
-          "VERB",
-          "PRON",
-          "NOUN",
-          "ADP"
-        ],
-        [
-          "VERB",
-          "PUNCT",
-          "ADP"
-        ],
-        [
-          "VERB",
-          "ADJ"
-        ],
-        [
-          "VERB",
-          "DET",
-          "ADJ",
-          "NOUN",
-          "ADP"
-        ],
-        [
-          "NOUN",
-          "PUNCT",
-          "VERB"
-        ],
-        [
-          "NOUN",
-          "VERB"
-        ],
-        [
-          "ADJ",
-          "PUNCT",
-          "NOUN"
-        ],
-        [
-          "NOUN",
-          "ADP"
-        ],
-        [
-          "NOUN",
-          "AUX",
-          "AUX",
-          "VERB"
-        ],
-        [
-          "VERB",
-          "VERB"
-        ],
-        [
-          "VERB",
-          "PRON",
-          "ADJ",
-          "NOUN",
-          "ADP"
-        ],
-        [
-          "VERB",
-          "SCONJ"
-        ],
-        [
-          "VERB",
-          "PROPN"
-        ],
-        [
-          "VERB",
-          "ADV",
-          "ADP"
-        ],
-        [
-          "VERB",
-          "PRON",
-          "DET",
-          "ADJ"
-        ],
-        [
-          "PROPN",
-          "PUNCT",
-          "PROPN"
-        ],
-        [
-          "VERB",
-          "PROPN",
-          "ADP"
-        ],
-        [
-          "VERB",
-          "NOUN",
-          "CCONJ",
-          "VERB",
-          "ADP"
-        ],
-        [
-          "ADJ",
-          "ADP"
-        ],
-        [
-          "ADP",
-          "ADP"
-        ],
-        [
-          "ADV",
-          "PUNCT",
-          "NOUN"
-        ],
-        [
-          "ADV",
-          "PUNCT",
-          "VERB"
-        ],
-        [
-          "PROPN",
-          "PUNCT",
-          "NOUN"
-        ],
-        [
-          "NOUN",
-          "PROPN"
-        ],
+      "f3": [
+        ["VERB", "ADP"],
+        ["VERB", "ADV"],
+        ["NOUN", "PUNCT", "NOUN"],
+        ["PROPN", "ADP"],
+        ["VERB", "ADP", "NOUN"],
+        ["VERB", "NOUN", "ADP"],
+        ["VERB", "NOUN"],
+        ["NOUN", "NOUN"],
+        ["VERB", "PRON", "ADV"],
+        ["VERB", "PRON", "ADJ"],
+        ["VERB", "ADJ", "NOUN", "ADV"],
+        ["ADJ", "NOUN"],
+        ["VERB", "PRON", "NOUN", "ADV"],
+        ["PROPN", "NOUN"],
+        ["VERB", "DET", "NOUN"],
+        ["VERB", "PRON", "ADP"],
+        ["VERB", "PRON", "PRON", "ADV"],
+        ["ADV", "ADP"],
+        ["PROPN", "PROPN"],
+        ["PROPN", "ADP", "NOUN"],
+        ["VERB", "DET", "NOUN", "ADP"],
+        ["VERB", "PRON", "NOUN", "ADP"],
+        ["VERB", "PUNCT", "ADP"],
+        ["VERB", "ADJ"],
+        ["VERB", "DET", "ADJ", "NOUN", "ADP"],
+        ["NOUN", "PUNCT", "VERB"],
+        ["NOUN", "VERB"],
+        ["ADJ", "PUNCT", "NOUN"],
+        ["NOUN", "ADP"],
+        ["NOUN", "AUX", "AUX", "VERB"],
+        ["VERB", "VERB"],
+        ["VERB", "PRON", "ADJ", "NOUN", "ADP"],
+        ["VERB", "SCONJ"],
+        ["VERB", "PROPN"],
+        ["VERB", "ADV", "ADP"],
+        ["VERB", "PRON", "DET", "ADJ"],
+        ["PROPN", "PUNCT", "PROPN"],
+        ["VERB", "PROPN", "ADP"],
+        ["VERB", "NOUN", "CCONJ", "VERB", "ADP"],
+        ["ADJ", "ADP"],
+        ["ADP", "ADP"],
+        ["ADV", "PUNCT", "NOUN"],
+        ["ADV", "PUNCT", "VERB"],
+        ["PROPN", "PUNCT", "NOUN"],
+        ["NOUN", "PROPN"],
         [
           "ADP",
           "ADJ",
@@ -533,90 +132,20 @@
           "VERB",
           "ADV"
         ],
-        [
-          "VERB",
-          "ADJ",
-          "NOUN"
-        ],
-        [
-          "VERB",
-          "PRON",
-          "VERB"
-        ],
-        [
-          "VERB",
-          "DET",
-          "NOUN",
-          "VERB"
-        ],
-        [
-          "AUX",
-          "VERB"
-        ],
-        [
-          "VERB",
-          "ADP",
-          "ADP"
-        ],
-        [
-          "AUX",
-          "VERB",
-          "ADP"
-        ],
-        [
-          "VERB",
-          "DET",
-          "NOUN",
-          "NOUN",
-          "ADP"
-        ],
-        [
-          "VERB",
-          "ADJ",
-          "NOUN",
-          "NOUN",
-          "ADP"
-        ],
-        [
-          "VERB",
-          "DET",
-          "PROPN",
-          "NOUN",
-          "ADP"
-        ],
-        [
-          "VERB",
-          "PRON",
-          "ADJ",
-          "NOUN",
-          "VERB"
-        ],
-        [
-          "VERB",
-          "PART",
-          "VERB"
-        ],
-        [
-          "AUX",
-          "ADP",
-          "NOUN"
-        ],
-        [
-          "VERB",
-          "PRON",
-          "NOUN",
-          "ADP",
-          "NOUN"
-        ],
-        [
-          "AUX",
-          "VERB",
-          "PRON",
-          "DET",
-          "NOUN",
-          "ADP",
-          "NOUN"
-        ],
+        ["VERB", "ADJ", "NOUN"],
+        ["VERB", "PRON", "VERB"],
+        ["VERB", "DET", "NOUN", "VERB"],
+        ["AUX", "VERB"],
+        ["VERB", "ADP", "ADP"],
+        ["AUX", "VERB", "ADP"],
+        ["VERB", "DET", "NOUN", "NOUN", "ADP"],
+        ["VERB", "ADJ", "NOUN", "NOUN", "ADP"],
+        ["VERB", "DET", "PROPN", "NOUN", "ADP"],
+        ["VERB", "PRON", "ADJ", "NOUN", "VERB"],
+        ["VERB", "PART", "VERB"],
+        ["AUX", "ADP", "NOUN"],
+        ["VERB", "PRON", "NOUN", "ADP", "NOUN"],
+        ["AUX", "VERB", "PRON", "DET", "NOUN", "ADP", "NOUN"],
         [
           "NOUN",
           "AUX",
@@ -648,21 +177,9 @@
           "NOUN",
           "ADP"
         ],
-        [
-          "VERB",
-          "PRON"
-        ],
-        [
-          "VERB",
-          "PRON",
-          "PRON",
-          "ADP"
-        ],
-        [
-          "VERB",
-          "PROPN",
-          "VERB"
-        ],
+        ["VERB", "PRON"],
+        ["VERB", "PRON", "PRON", "ADP"],
+        ["VERB", "PROPN", "VERB"],
         [
           "ADP",
           "PUNCT",
@@ -678,119 +195,50 @@
           "NOUN",
           "VERB"
         ],
-        [
-          "ADV",
-          "VERB"
-        ],
-        [
-          "VERB",
-          "DET",
-          "NOUN",
-          "ADJ"
-        ],
-        [
-          "PART",
-          "PART",
-          "VERB"
-        ],
-        [
-          "ADJ",
-          "NOUN",
-          "NOUN"
-        ],
-        [
-          "VERB",
-          "NUM",
-          "NOUN",
-          "ADP"
-        ],
-        [
-          "VERB",
-          "PUNCT",
-          "ADP",
-          "ADV",
-          "PUNCT",
-          "ADP"
-        ],
-        [
-          "VERB",
-          "DET",
-          "NOUN",
-          "VERB",
-          "ADP"
-        ],
-        [
-          "NOUN",
-          "ADV"
-        ],
-        [
-          "VERB",
-          "NOUN",
-          "NOUN",
-          "ADP"
-        ],
-        [
-          "ADV",
-          "PART",
-          "VERB"
-        ],
-        [
-          "VERB",
-          "PUNCT",
-          "ADV"
-        ],
-        [
-          "NUM",
-          "NUM"
-        ]
+        ["ADV", "VERB"],
+        ["VERB", "DET", "NOUN", "ADJ"],
+        ["PART", "PART", "VERB"],
+        ["ADJ", "NOUN", "NOUN"],
+        ["VERB", "NUM", "NOUN", "ADP"],
+        ["VERB", "PUNCT", "ADP", "ADV", "PUNCT", "ADP"],
+        ["VERB", "DET", "NOUN", "VERB", "ADP"],
+        ["NOUN", "ADV"],
+        ["VERB", "NOUN", "NOUN", "ADP"],
+        ["ADV", "PART", "VERB"],
+        ["VERB", "PUNCT", "ADV"],
+        ["NUM", "NUM"]
       ],
-      "f4":[
-        1,
-        2,
-        3,
-        4,
-        8,
-        5,
-        15,
-        10,
-        12
+      "f4": [1, 2, 3, 4, 8, 5, 15, 10, 12],
+      "f5": null,
+      "f6": null,
+      "f7": [
+        [],
+        ["Number=Sing", "Number=Sing"],
+        ["Number=Sing"],
+        ["Number=Sing", "Number=Plur"],
+        ["Number=Plur"],
+        ["Number=Plur", "Number=Plur"]
       ],
-      "f5":null,
-      "f6":null,
-      "f7":[
-        [
-
-        ],
-        [
-          "Number=Sing",
-          "Number=Sing"
-        ],
-        [
-          "Number=Sing"
-        ],
-        [
-          "Number=Sing",
-          "Number=Plur"
-        ],
-        [
-          "Number=Plur"
-        ],
-        [
-          "Number=Plur",
-          "Number=Plur"
-        ]
-      ],
-      "f8":null
+      "f8": null
     }
   },
-  "active_filters":[
-    "f1",
-    "f2",
-    "f3",
-    "f4",
-    "f5",
-    "f6",
-    "f7",
-    "f8"
-  ]
+  "active_filters": {
+    "ADJ": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+    "ADP": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+    "ADV": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+    "AUX": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+    "CCONJ": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+    "DET": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+    "INTJ": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+    "NOUN": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+    "NUM": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+    "PART": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+    "PRON": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+    "PROPN": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+    "PUNCT": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+    "SCONJ": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+    "SYM": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+    "VERB": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+    "X": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"]
+  }
 }

@@ -10,7 +10,7 @@ from collections import defaultdict
 import os
 
 # Type hints
-from typing import List, TypedDict, Tuple, DefaultDict
+from typing import List, TypedDict, Tuple, DefaultDict, Dict
 from pathlib import Path
 
 
@@ -79,7 +79,9 @@ class MWEDetectorData:
                 "f8": F8.default_data(),
             }
         )
-        self.active_filters = ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"]
+        self.active_filters: DefaultDict[str, List[str]] = defaultdict(
+            lambda: ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"]
+        )
         self.continuous_POS = ["ADJ", "ADV", "ADP", "CONJ", "INTJ", "NOUN", "PROPN"]
 
     def to_dict(self):
@@ -126,8 +128,10 @@ class MWEDetector:
         return self._data.active_filters
 
     @active_filters.setter
-    def active_filters(self, new_active_filters):
-        self._data.active_filters = new_active_filters
+    def active_filters(self, new_active_filters: Dict[str, List[str]]):
+        self._data.active_filters = defaultdict(
+            lambda: ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"], new_active_filters
+        )
 
     def _example_to_key(self, example: ExampleType):
         # lemmas = example["lemmas"]
@@ -167,25 +171,13 @@ class MWEDetector:
             example_as_example_type = self._doc_to_example_type(example)
             self.train_from_example(example_as_example_type)
 
-    # def _find_candidate_matches(self, lemmas: List[str], sent_doc: Doc):
-    #     single_matches : List[List[int,]] = []
-    #     for lemma in lemmas:
-    #         matched_tokens = list(
-    #             filter(lambda x: x.lemma_.lower() == lemma.lower(), sent_doc)
-    #         )
-    #         if len(matched_tokens) == 0:
-    #             return []
-    #         single_matches.append([tok.i for tok in matched_tokens])
-
-    #     return list(product(*single_matches))
-
     def apply_filters(
-        self, doc: Doc, mwe, match_idx
+        self, doc: Doc, mwe: MWEType, match_idx
     ) -> Tuple[bool, bool, bool, bool, bool, bool, bool, bool]:
         filter_results = tuple(
             [
                 self._filters[f_key].filter(mwe[f_key], doc, match_idx)
-                for f_key in self.active_filters
+                for f_key in self.active_filters[mwe["pos"]]
             ]
         )
         return filter_results
@@ -214,7 +206,7 @@ class MWEDetector:
                         predictions[idx] = (
                             label
                             if predictions[idx] == "*"
-                            else predictions[idx] + ", " + label
+                            else predictions[idx] + "," + label
                         )
         for i, tok in enumerate(doc):
             tok._.wikt_mwe = predictions[i]
