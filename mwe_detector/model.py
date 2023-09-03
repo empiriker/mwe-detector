@@ -236,7 +236,7 @@ class MWEDetector:
         for doc in examples:
             mwes_present = set(
                 sum(
-                    [tok._.wikt_mwe.split(",") for tok in doc if tok._.wikt_mwe != "*"],
+                    [tok._.wikt_mwe.split("|") for tok in doc if tok._.wikt_mwe != "*"],
                     [],
                 )
             )
@@ -280,7 +280,7 @@ class MWEDetector:
                         predictions[idx] = (
                             label
                             if predictions[idx] == "*"
-                            else predictions[idx] + "," + label
+                            else predictions[idx] + "|" + label
                         )
         for i, tok in enumerate(doc):
             tok._.wikt_mwe = predictions[i]
