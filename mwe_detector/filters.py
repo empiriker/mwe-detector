@@ -143,11 +143,11 @@ class F4(Filter[F4Data]):
 
     def filter(self, discontinuities: F4Data, sent: Doc, match_idx: Tuple[int, ...]):
         match_discontinuity = self._get_discontinuity(match_idx)
-        return match_discontinuity <= max(discontinuities)
+        return match_discontinuity <= (max(discontinuities) if discontinuities else 1)
 
     @staticmethod
     def default_data() -> F4Data:
-        return []
+        return [1]
 
 
 F5Data: TypeAlias = None
