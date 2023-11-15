@@ -1,7 +1,6 @@
-from typing import List, Tuple, Iterable, Union, DefaultDict, Protocol
-
-from itertools import product, combinations
 from collections import defaultdict
+from itertools import combinations, product
+from typing import DefaultDict, Iterable, List, Protocol, Tuple, Union
 
 import numpy as np
 
@@ -42,7 +41,7 @@ def find_candidate_matches(
                 flattened_tuple.extend(item)
             else:
                 flattened_tuple.append(item)
-        match_idxs.append(tuple(flattened_tuple))
+        match_idxs.append(tuple(sorted(flattened_tuple)))
 
     return match_idxs
 

@@ -71,3 +71,13 @@ def test_case_insensitivity():
     tokens = ["test1", "test2", "test3"]
     expected_result = [(0, 1)]
     assert find_candidate_matches(lemmas, tokens) == expected_result
+
+
+def test_indices_order_in_match_idxs():
+    lemmas = ["test1", "test1", "test2"]
+    tokens = ["test2", "test1", "test1", "test2"]
+    result = find_candidate_matches(lemmas, tokens)
+
+    # Check if each tuple in the result is sorted
+    for match in result:
+        assert match == tuple(sorted(match)), f"Tuple {match} is not sorted"
