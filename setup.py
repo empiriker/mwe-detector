@@ -1,13 +1,3 @@
-# from setuptools import setup
-
-# import os
-
-# lib_folder = os.path.dirname(os.path.realpath(__file__))
-# requirement_path = lib_folder + "/requirements.txt"
-# install_requires = []
-# if os.path.isfile(requirement_path):
-#     with open(requirement_path) as f:
-#         install_requires = f.read().splitlines()
 import setuptools
 
 setuptools.setup(
@@ -22,4 +12,14 @@ setuptools.setup(
     zip_safe=False,
     include_package_data=True,
     package_data={"mwe_detector": ["data/*.json"]},
+    python_requires=">=3.10",
+    install_requires=["numpy>=1.15.0", "spacy>=3.7.2", "srsly>=2.4.6", "ujson>=5.8.0"],
+    extras_require={
+        "dev": [
+            "pytest>=7.4.0",
+            "en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.0/en_core_web_sm-3.7.0.tar.gz#egg=en_core_web_sm",
+            "fr_core_news_sm @ https://github.com/explosion/spacy-models/releases/download/fr_core_news_sm-3.7.0/fr_core_news_sm-3.7.0.tar.gz#egg=fr_core_news_sm",
+            "de_core_news_sm @ https://github.com/explosion/spacy-models/releases/download/de_core_news_sm-3.7.0/de_core_news_sm-3.7.0.tar.gz#egg=de_core_news_sm",
+        ]
+    },
 )
