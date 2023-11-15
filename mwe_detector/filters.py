@@ -1,13 +1,13 @@
 # Functional libraries
-import numpy as np
-from spacy.tokens import Doc, Token
+# Type hints
+from abc import ABC, abstractmethod
 
 # Utilities
 from itertools import product
+from typing import Generic, List, Tuple, TypeAlias, TypedDict, TypeVar
 
-# Type hints
-from abc import ABC, abstractmethod
-from typing import Tuple, List, TypedDict, TypeAlias, Generic, TypeVar
+import numpy as np
+from spacy.tokens import Doc, Token
 
 
 class ExampleType(TypedDict):

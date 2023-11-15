@@ -1,40 +1,39 @@
 # Functional libraries
-from spacy.tokens import Doc, Token
-from spacy.language import Language
-import srsly
-from spacy.util import ensure_path
-from .utils import find_candidate_matches, find_continuous_candidate_matches
+import os
 
 # Utilities
 from collections import defaultdict
-import os
-import ujson as json
-
-# Type hints
-from typing import List, TypedDict, Tuple, DefaultDict, Dict
 from pathlib import Path
 
+# Type hints
+from typing import DefaultDict, Dict, List, Tuple, TypedDict
+
+import srsly
+import ujson as json
+from spacy.language import Language
+from spacy.tokens import Doc, Token
+from spacy.util import ensure_path
 
 from .filters import (
-    F1Data,
     F1,
-    F2Data,
     F2,
-    F3Data,
     F3,
-    F4Data,
     F4,
-    F5Data,
     F5,
-    F6Data,
     F6,
-    F7Data,
     F7,
-    F8Data,
     F8,
     ExampleType,
+    F1Data,
+    F2Data,
+    F3Data,
+    F4Data,
+    F5Data,
+    F6Data,
+    F7Data,
+    F8Data,
 )
-
+from .utils import find_candidate_matches, find_continuous_candidate_matches
 
 if not Token.has_extension("wikt_mwe"):
     Token.set_extension("wikt_mwe", default="*")

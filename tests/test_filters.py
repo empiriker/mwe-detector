@@ -1,5 +1,6 @@
 import pytest
 from spacy import load
+
 from mwe_detector.filters import F1, F2, F3, F4, F5, F6, F7, ExampleType
 
 nlp_en = load("en_core_web_sm")
@@ -171,8 +172,9 @@ def test_f4_add_example(f4_doc1):
     )
 
     f4_filter.add_example(data, example)
-    assert len(data) == 1  # type: ignore
-    assert data[0] == 4  # type: ignore
+    assert len(data) == 2  # type: ignore
+    assert data[0] == 1  # type: ignore, default value
+    assert data[1] == 4  # type: ignore
 
 
 def test_f4_filter(f4_doc1, f4_doc2):

@@ -1,7 +1,8 @@
-from mwe_detector.model import MWEDetector
-import mwe_detector.pipeline
-import spacy
 import pytest
+import spacy
+
+import mwe_detector.pipeline
+from mwe_detector.model import MWEDetector
 
 
 def test_custom_pipeline_fr():

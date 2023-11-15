@@ -1,8 +1,9 @@
-from spacy.lang.fr import French
-from spacy.lang.en import English
-from mwe_detector.model import MWEDetector
-
 import os
+
+from spacy.lang.en import English
+from spacy.lang.fr import French
+
+from mwe_detector.model import MWEDetector
 
 FN = os.path.join(os.path.dirname(__file__), "data")
 

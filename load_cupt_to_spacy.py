@@ -1,8 +1,8 @@
-import conllu
-from spacy.tokens import Doc
-from spacy.language import Language
-
 from typing import List
+
+import conllu
+from spacy.language import Language
+from spacy.tokens import Doc
 
 
 def load_cupt_to_spacy(path: str, nlp: Language, mwe_column_name: str = "wikt:mwe"):

@@ -1,5 +1,6 @@
-import spacy
 import pytest
+import spacy
+
 import mwe_detector.lemma_normalizer
 
 
