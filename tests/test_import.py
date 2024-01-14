@@ -1,7 +1,6 @@
-import pytest
 import spacy
 
-import mwe_detector.pipeline
+import mwe_detector.pipeline  # type: ignore
 from mwe_detector.model import MWEDetector
 
 

@@ -6,7 +6,7 @@ from collections import defaultdict
 from pathlib import Path
 
 # Type hints
-from typing import DefaultDict, Dict, List, Tuple, TypedDict
+from typing import Any, Optional, TypedDict
 
 import srsly
 import ujson as json
@@ -52,7 +52,7 @@ class Filters(TypedDict):
 
 class MWEType(TypedDict):
     pos: str
-    lemmas: List[str]
+    lemmas: list[str]
     f1: F1Data
     f2: F2Data
     f3: F3Data
@@ -63,9 +63,14 @@ class MWEType(TypedDict):
     f8: F8Data
 
 
+class MWEDetectorDataSerialized(TypedDict):
+    mwes: dict[str, MWEType]
+    active_filters: dict[str, list[str]]
+
+
 class MWEDetectorData:
     def __init__(self):
-        self.mwes: DefaultDict[str, MWEType] = defaultdict(
+        self.mwes: defaultdict[str, MWEType] = defaultdict(
             lambda: {
                 "pos": "",
                 "lemmas": [],
@@ -79,7 +84,7 @@ class MWEDetectorData:
                 "f8": F8.default_data(),
             }
         )
-        self.active_filters: DefaultDict[str, List[str]] = defaultdict(
+        self.active_filters: defaultdict[str, list[str]] = defaultdict(
             lambda: ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
             {
                 "ADJ": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
@@ -105,14 +110,16 @@ class MWEDetectorData:
     def to_dict(self):
         return {"mwes": self.mwes, "active_filters": self.active_filters}
 
-    def from_dict(self, data):
-        self.mwes = data["mwes"]
-        self.active_filters = data["active_filters"]
+    def from_dict(self, data: MWEDetectorDataSerialized):
+        self.mwes.clear()
+        self.mwes.update(data["mwes"])
+        self.active_filters.clear()
+        self.active_filters.update(data["active_filters"])
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str):
         return self.mwes[key]
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value: MWEType):
         self.mwes[key] = value
 
 
@@ -146,7 +153,7 @@ class MWEDetector:
         return self._data.active_filters
 
     @active_filters.setter
-    def active_filters(self, new_active_filters: Dict[str, List[str]]):
+    def active_filters(self, new_active_filters: dict[str, list[str]]):
         self._data.active_filters = defaultdict(
             lambda: ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"], new_active_filters
         )
@@ -169,7 +176,12 @@ class MWEDetector:
 
     #     return result
 
-    def _sort_lemmas_by_rank(self, lemmas: list[str], rank_dict, ascending=False):
+    def _sort_lemmas_by_rank(
+        self,
+        lemmas: list[str],
+        rank_dict: Optional[dict[str, int]],
+        ascending: bool = False,
+    ):
         if rank_dict is None:
             return lemmas
 
@@ -217,39 +229,29 @@ class MWEDetector:
         self.mwes[mwe_key]["pos"] = example["pos"]
 
         for filter_key in self._filters.keys():
-            self._filters[filter_key].add_example(
+            self._filters[filter_key].add_example(  # type: ignore
                 self.mwes[mwe_key][filter_key], example
             )
 
-    # def train(self, examples: List[Doc]):
-    #     if not Doc.has_extension("mwe_lemma"):
-    #         Doc.set_extension("mwe_lemma", default="")
-    #     if not Doc.has_extension("mwe_pos"):
-    #         Doc.set_extension("mwe_pos", default="")
-
-    #     for example in examples:
-    #         example_as_example_type = self._doc_to_example_type(example)
-    #         self.train_from_example(example_as_example_type)
-
-    def train(self, examples: List[Doc]):
+    def train(self, examples: list[Doc]):
         for doc in examples:
-            mwes_present = set(
-                sum(
-                    [tok._.wikt_mwe.split("|") for tok in doc if tok._.wikt_mwe != "*"],
-                    [],
-                )
-            )
+            mwes_present: set[str] = {
+                mwe
+                for tok in doc
+                if tok._.wikt_mwe != "*"
+                for mwe in tok._.wikt_mwe.split("|")
+            }
             for mwe in mwes_present:
                 example = self._doc_to_example_type(doc, mwe)
 
                 self.train_from_example(example)
 
     def apply_filters(
-        self, doc: Doc, mwe: MWEType, match_idx
-    ) -> Tuple[bool, bool, bool, bool, bool, bool, bool, bool]:
-        filter_results = tuple(
+        self, doc: Doc, mwe: MWEType, match_idx: tuple[int, ...]
+    ) -> tuple[bool, ...]:
+        filter_results: tuple[bool, ...] = tuple(
             [
-                self._filters[f_key].filter(mwe[f_key], doc, match_idx)
+                self._filters[f_key].filter(mwe[f_key], doc, match_idx)  # type: ignore
                 for f_key in self.active_filters[mwe["pos"]]
             ]
         )
@@ -286,19 +288,19 @@ class MWEDetector:
 
         return doc
 
-    def to_disk(self, path: str, exclude=tuple()):
+    def to_disk(self, path: str, exclude: tuple[Any, ...] = tuple()):
         path_save: Path = ensure_path(path)
         if not path_save.exists():
             path_save.mkdir()
 
-        srsly.write_json(
+        srsly.write_json(  # type: ignore
             os.path.join(path, self._lang + "_data.json"), self._data.to_dict()
         )
 
-    def from_disk(self, path: str, exclude=tuple()):
+    def from_disk(self, path: str, exclude: tuple[Any, ...] = tuple()):
         file_path = os.path.join(path, self._lang + "_data.json")
         path_save = ensure_path(file_path)
-        data = srsly.read_json(path_save)
+        data: MWEDetectorDataSerialized = srsly.read_json(path_save)  # type: ignore
 
         self._data.from_dict(data)
         return self

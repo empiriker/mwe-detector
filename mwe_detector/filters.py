@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 
 # Utilities
 from itertools import product
-from typing import Generic, List, Tuple, TypeAlias, TypedDict, TypeVar
+from typing import Generic, Tuple, TypeAlias, TypedDict, TypeVar
 
 import numpy as np
 from spacy.tokens import Doc, Token
@@ -12,7 +12,7 @@ from spacy.tokens import Doc, Token
 
 class ExampleType(TypedDict):
     lemma: str
-    lemmas: List[str]
+    lemmas: list[str]
     example: Doc
     match_idx: Tuple[int, ...]
     pos: str
@@ -36,7 +36,7 @@ class Filter(ABC, Generic[T]):
         raise NotImplementedError
 
 
-F1Data: TypeAlias = List[List[str]]
+F1Data: TypeAlias = list[list[str]]
 
 
 class F1(Filter[F1Data]):
@@ -48,17 +48,17 @@ class F1(Filter[F1Data]):
     def _get_multiset(self, doc: Doc, match_idx: Tuple[int, ...]):
         return sorted([doc[i].pos_ for i in match_idx])
 
-    def add_example(self, pos_sets: F1Data, mwe: ExampleType):
+    def add_example(self, data: F1Data, mwe: ExampleType):
         pos_multiset = self._get_multiset(mwe["example"], mwe["match_idx"])
-        if pos_multiset not in pos_sets:
-            pos_sets.append(pos_multiset)
+        if pos_multiset not in data:
+            data.append(pos_multiset)
 
-    def filter(self, pos_sets: F1Data, sent: Doc, match_idx: Tuple[int, ...]):
+    def filter(self, data: F1Data, sent: Doc, match_idx: Tuple[int, ...]):
         match_pos = self._get_multiset(sent, match_idx)
         return any(
             [
                 all(match_pos.count(pos) >= pos_set.count(pos) for pos in set(pos_set))
-                for pos_set in pos_sets
+                for pos_set in data
             ]
         )
 
@@ -67,7 +67,7 @@ class F1(Filter[F1Data]):
         return []
 
 
-F2Data: TypeAlias = List[List[str]]
+F2Data: TypeAlias = list[list[str]]
 
 
 class F2(Filter[F2Data]):
@@ -79,21 +79,21 @@ class F2(Filter[F2Data]):
     def _get_pos(self, doc: Doc, match_idx: Tuple[int, ...]):
         return [doc[i].pos_ for i in match_idx]
 
-    def add_example(self, pos_orders: F2Data, mwe: ExampleType):
+    def add_example(self, data: F2Data, mwe: ExampleType):
         pos_order = self._get_pos(mwe["example"], mwe["match_idx"])
-        if pos_order not in pos_orders:
-            pos_orders.append(pos_order)
+        if pos_order not in data:
+            data.append(pos_order)
 
-    def filter(self, pos_orders: F2Data, sent: Doc, match_idx: Tuple[int, ...]):
+    def filter(self, data: F2Data, sent: Doc, match_idx: Tuple[int, ...]):
         match_pos = self._get_pos(sent, match_idx)
-        return any([match_pos == pos_order for pos_order in pos_orders])
+        return any([match_pos == pos_order for pos_order in data])
 
     @staticmethod
     def default_data() -> F2Data:
         return []
 
 
-F3Data: TypeAlias = List[List[str]]
+F3Data: TypeAlias = list[list[str]]
 
 
 class F3(Filter[F3Data]):
@@ -105,21 +105,21 @@ class F3(Filter[F3Data]):
     def _get_pos(self, doc: Doc, match_idx: Tuple[int, ...]):
         return [doc[i].pos_ for i in range(min(match_idx), max(match_idx) + 1)]
 
-    def add_example(self, pos_orders: F3Data, mwe: ExampleType):
+    def add_example(self, data: F3Data, mwe: ExampleType):
         pos_order = self._get_pos(mwe["example"], mwe["match_idx"])
-        if pos_order not in pos_orders:
-            pos_orders.append(pos_order)
+        if pos_order not in data:
+            data.append(pos_order)
 
-    def filter(self, pos_orders: F3Data, sent: Doc, match_idx: Tuple[int, ...]):
+    def filter(self, data: F3Data, sent: Doc, match_idx: Tuple[int, ...]):
         match_pos = self._get_pos(sent, match_idx)
-        return any([match_pos == pos_order for pos_order in pos_orders])
+        return any([match_pos == pos_order for pos_order in data])
 
     @staticmethod
     def default_data() -> F3Data:
         return []
 
 
-F4Data: TypeAlias = List[int]
+F4Data: TypeAlias = list[int]
 
 
 class F4(Filter[F4Data]):
@@ -136,14 +136,14 @@ class F4(Filter[F4Data]):
         idx.sort()
         return max([idx[i + 1] - idx[i] for i in range(len(idx) - 1)])
 
-    def add_example(self, discontinuities: F4Data, mwe: ExampleType):
+    def add_example(self, data: F4Data, mwe: ExampleType):
         discontinuity = self._get_discontinuity(mwe["match_idx"])
-        if discontinuity not in discontinuities:
-            discontinuities.append(discontinuity)
+        if discontinuity not in data:
+            data.append(discontinuity)
 
-    def filter(self, discontinuities: F4Data, sent: Doc, match_idx: Tuple[int, ...]):
+    def filter(self, data: F4Data, sent: Doc, match_idx: Tuple[int, ...]):
         match_discontinuity = self._get_discontinuity(match_idx)
-        return match_discontinuity <= (max(discontinuities) if discontinuities else 1)
+        return match_discontinuity <= (max(data) if data else 1)
 
     @staticmethod
     def default_data() -> F4Data:
@@ -166,7 +166,7 @@ class F5(Filter[F5Data]):
 
     def _get_all_internal_matches(self, doc: Doc, match_idx: Tuple[int, ...]):
         lemmas = [doc[i].lemma_ for i in match_idx]
-        single_matches = []
+        single_matches: list[list[int]] = []
 
         for lemma in lemmas:
             single_matches.append(
@@ -202,7 +202,7 @@ class F6(Filter[F6Data]):
     This filter is global. It keeps a candidate match of two tokens if the tokens are parents or grandparents of each other. It keeps candidate matches of more than two tokens if these tokens build a connected subgraph of the dependency tree.
     """
 
-    def _is_connected_tree(self, tokens: List[Token]):
+    def _is_connected_tree(self, tokens: list[Token]):
         # Algorithm has high complexity,
         # Usable only since number of tokens is not expected to be large
         N = len(tokens)
@@ -235,7 +235,7 @@ class F6(Filter[F6Data]):
         return None
 
 
-F7Data: TypeAlias = List[str]
+F7Data: TypeAlias = set[str]
 
 
 class F7(Filter[F7Data]):
@@ -247,30 +247,31 @@ class F7(Filter[F7Data]):
     def _get_nouns(self, doc: Doc, match_idx: Tuple[int, ...]):
         return list(filter(lambda x: x.pos_ == "NOUN", [doc[i] for i in match_idx]))
 
-    def add_example(self, noun_morphs: F7Data, mwe: ExampleType):
+    def add_example(self, data: F7Data, mwe: ExampleType):
         nouns = self._get_nouns(mwe["example"], mwe["match_idx"])
         if not len(nouns) == 1:
-            return True
+            return None
         noun = nouns[0]
 
-        noun_number = noun.morph.get("Number")  # type: ignore
-        if noun_number not in noun_morphs:
-            noun_morphs.extend(noun_number)
+        noun_number = noun.morph.get("Number", None)
+        if noun_number:
+            data.add(noun_number[0])
+        return
 
-    def filter(self, noun_morphs: F7Data, sent: Doc, match_idx: Tuple[int, ...]):
+    def filter(self, data: F7Data, sent: Doc, match_idx: Tuple[int, ...]):
         nouns = self._get_nouns(sent, match_idx)
         if not len(nouns) == 1:
             return True
-        noun_numbers = nouns[0].morph.get("Number")  # type: ignore
+        noun_numbers = nouns[0].morph.get("Number", None)
         if not noun_numbers:
             return False
         noun_number = noun_numbers[0]
 
-        return noun_number in noun_morphs
+        return noun_number in data
 
     @staticmethod
     def default_data() -> F7Data:
-        return []
+        return set()
 
 
 F8Data: TypeAlias = None

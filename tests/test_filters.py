@@ -1,5 +1,8 @@
+from typing import Tuple
+
 import pytest
 from spacy import load
+from spacy.tokens import Doc
 
 from mwe_detector.filters import F1, F2, F3, F4, F5, F6, F7, ExampleType
 
@@ -15,8 +18,8 @@ def setup_F1():
     return filter, doc1, doc2
 
 
-def test_F1_add_example(setup_F1):
-    filter, doc1, doc2 = setup_F1
+def test_F1_add_example(setup_F1: Tuple[F1, Doc, Doc]):
+    filter, doc1, _ = setup_F1
     data = filter.default_data()
     example = ExampleType(
         lemma="example1",
@@ -31,7 +34,7 @@ def test_F1_add_example(setup_F1):
     assert data[0] == ["ADJ", "ADJ", "NOUN"]
 
 
-def test_F1_filter(setup_F1):
+def test_F1_filter(setup_F1: Tuple[F1, Doc, Doc]):
     filter, doc1, doc2 = setup_F1
     data = filter.default_data()
     example = ExampleType(
@@ -67,16 +70,16 @@ def f2_doc2():
 
 
 @pytest.fixture
-def f3_doc1(f2_doc1):
+def f3_doc1(f2_doc1: Doc):
     return f2_doc1
 
 
 @pytest.fixture
-def f3_doc2(f2_doc2):
+def f3_doc2(f2_doc2: Doc):
     return f2_doc2
 
 
-def test_f2_add_example(f2_doc1):
+def test_f2_add_example(f2_doc1: Doc):
     f2_filter = F2()
     data = f2_filter.default_data()
     example = ExampleType(
@@ -91,7 +94,7 @@ def test_f2_add_example(f2_doc1):
     assert data[0] == ["VERB", "ADP", "DET"]  # type: ignore
 
 
-def test_f2_filter(f2_doc1, f2_doc2):
+def test_f2_filter(f2_doc1: Doc, f2_doc2: Doc):
     f2_filter = F2()
     data = f2_filter.default_data()
     example = ExampleType(
@@ -113,7 +116,7 @@ def test_f2_filter(f2_doc1, f2_doc2):
     assert not result
 
 
-def test_f3_add_example(f3_doc1):
+def test_f3_add_example(f3_doc1: Doc):
     f3_filter = F3()
     data = f3_filter.default_data()
     example = ExampleType(
@@ -128,7 +131,7 @@ def test_f3_add_example(f3_doc1):
     assert data[0] == ["DET", "ADJ", "ADJ", "NOUN", "VERB"]  # type: ignore
 
 
-def test_f3_filter(f3_doc1, f3_doc2):
+def test_f3_filter(f3_doc1: Doc, f3_doc2: Doc):
     f3_filter = F3()
     data = f3_filter.default_data()
     example = ExampleType(
@@ -160,7 +163,7 @@ def f4_doc2():
     return nlp_en("Time flies like an arrow; fruit flies like a banana.")
 
 
-def test_f4_add_example(f4_doc1):
+def test_f4_add_example(f4_doc1: Doc):
     f4_filter = F4()
     data = f4_filter.default_data()
     example = ExampleType(
@@ -177,7 +180,7 @@ def test_f4_add_example(f4_doc1):
     assert data[1] == 4  # type: ignore
 
 
-def test_f4_filter(f4_doc1, f4_doc2):
+def test_f4_filter(f4_doc1: Doc, f4_doc2: Doc):
     f4_filter = F4()
     data = f4_filter.default_data()
     example = ExampleType(
@@ -201,7 +204,7 @@ def f5_doc():
     )
 
 
-def test_f5_filter(f5_doc):
+def test_f5_filter(f5_doc: Doc):
     f5_filter = F5()
 
     assert not f5_filter.filter(None, f5_doc, (1, 2, 10))  # type: ignore
@@ -213,7 +216,7 @@ def f6_doc():
     return nlp_en("John, who lives in New York, likes apples.")
 
 
-def test_f6_filter(f6_doc):
+def test_f6_filter(f6_doc: Doc):
     f6_filter = F6()
 
     assert f6_filter.filter(None, f6_doc, (0, 8))  # type: ignore
@@ -235,7 +238,7 @@ def f7_doc_fr():
     return nlp_fr("La vache brune rapide saute par-dessus les chiens paresseux.")
 
 
-def test_f7_filter_en(f7_doc_en):
+def test_f7_filter_en(f7_doc_en: Doc):
     f7_filter = F7()
 
     assert f7_filter.filter([], f7_doc_en, (1, 2))  # type: ignore
@@ -252,7 +255,7 @@ def test_f7_filter_en(f7_doc_en):
     assert not f7_filter.filter([], f7_doc_en, (3,))  # type: ignore
 
 
-def test_f7_filter_fr(f7_doc_fr):
+def test_f7_filter_fr(f7_doc_fr: Doc):
     f7_filter = F7()
 
     assert f7_filter.filter([], f7_doc_fr, (0, 2))  # type: ignore

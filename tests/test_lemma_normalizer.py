@@ -1,7 +1,6 @@
-import pytest
 import spacy
 
-import mwe_detector.lemma_normalizer
+import mwe_detector.lemma_normalizer  # type: ignore
 
 
 def test_en_base_lemmatizer():
