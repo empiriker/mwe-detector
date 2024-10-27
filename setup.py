@@ -7,7 +7,7 @@ setuptools.setup(
     url="https://github.com/empiriker/mwe-detector",
     author="Till ÜF",
     author_email="empiriker@yahoo.de",
-    license="All rights reserved",
+    license="CC-BY-SA-4.0",
     packages=["mwe_detector"],
     zip_safe=False,
     include_package_data=True,
