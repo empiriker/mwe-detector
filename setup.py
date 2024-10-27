@@ -3,7 +3,7 @@ import setuptools
 setuptools.setup(
     name="mwe_detector",
     version="0.0.1",
-    description="A SpaCy MWEDetector pipeline component",
+    description="A SpaCy MWE identification pipeline component",
     url="https://github.com/empiriker/mwe-detector",
     author="Till ÜF",
     author_email="empiriker@yahoo.de",
