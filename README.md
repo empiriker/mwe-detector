@@ -16,6 +16,21 @@ pip install git+https://github.com/empiriker/mwe-detector.git
 
 ## Usage
 
+## Development
+
+To install the development dependencies, clone the repository and run
+
+```bash
+pip install .[dev]
+```
+
+### Train
+
+Train the model on your own training data, specified in [config.py](./mwe_detector/config.py) with
+
+```bash
+python train.py --lang_code fr
+```
 ## Data
 
 ## Acknowledgements

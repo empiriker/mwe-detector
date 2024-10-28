@@ -1,17 +1,15 @@
 import argparse
+import glob
+import os
+from datetime import datetime, timezone
+import ujson as json
+
 import spacy
 from spacy.tokens import Doc, Token
 
-import os
-import glob
-from datetime import datetime
-
-
-from mwe_detector.model import MWEDetector
 from config import SPACY_MODEL, TRAIN_DATA_DIR
-
 from load_cupt_to_spacy import load_cupt_to_spacy
-
+from mwe_detector.model import MWEDetector
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Trains a model for MWE detection")
@@ -33,18 +31,22 @@ if __name__ == "__main__":
         Token.set_extension("wikt_mwe", default="*")
 
     matching_files = glob.glob(
-        os.path.join(TRAIN_DATA_DIR, f"{args.lang_code}_training_*.cupt")
+        os.path.join(TRAIN_DATA_DIR, f"{args.lang_code}_train_*.cupt")
     )
 
     # Function to extract timestamp from filename
     def extract_timestamp(filename):
-        # Extract the date and time from the filename
-        timestamp_str = (
-            filename.split("_")[3] + "_" + filename.split("_")[4].split(".")[0]
-        )
+        try:
+            # Extract the date and time from the filename
+            timestamp_str = (
+                filename.split("_")[-2] + "_" + filename.split("_")[-1].split(".")[0]
+            )
 
-        # Convert string to datetime object
-        return datetime.strptime(timestamp_str, "%Y-%m-%d_%H-%M-%S")
+            # Convert string to datetime object
+            return datetime.strptime(timestamp_str, "%Y-%m-%d_%H-%M-%S")
+
+        except (ValueError, IndexError):
+            return datetime.min.replace(tzinfo=timezone.utc)
 
     # Sort files based on the timestamp
     latest_file = sorted(matching_files, key=extract_timestamp)[-1]
@@ -53,6 +55,11 @@ if __name__ == "__main__":
 
     train_data = load_cupt_to_spacy(train_file, nlp)
 
+    with open(
+        os.path.join(TRAIN_DATA_DIR, f"{args.lang_code}_rank.json")
+        ) as f:
+            rank_dict = json.load(f)
+
     mweDetector = MWEDetector(nlp)
-    mweDetector.train(train_data)
+    mweDetector.train(train_data, rank_dict)
     mweDetector.to_disk("mwe_detector/data")

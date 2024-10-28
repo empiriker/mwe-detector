@@ -1,8 +1,7 @@
-TRAIN_DATA_DIR = "/home/till/VSCode/mwe-detection/mwe_manager/output"
+TRAIN_DATA_DIR = "./data/"
 
 TEST_DATA_PATH = {
-    "fr": "/home/till/VSCode/mwe-detection/data/parseme_corpus_fr/train.spacy",
-    # "fr": "/home/till/VSCode/mwe-detection/data/sequoia/sequoia-ud.parseme.frsemcor.spacy",
+    "fr": "./data",
 }
 
 SPACY_MODEL = {

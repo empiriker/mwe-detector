@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Any, Optional, TypedDict
 
 import srsly
-import ujson as json
 from spacy.language import Language
 from spacy.tokens import Doc, Token
 from spacy.util import ensure_path
@@ -108,7 +107,16 @@ class MWEDetectorData:
         self.continuous_POS = ["ADJ", "ADV", "ADP", "CONJ", "INTJ", "NOUN", "PROPN"]
 
     def to_dict(self):
-        return {"mwes": self.mwes, "active_filters": self.active_filters}
+        mwes_copy = {}
+        for key, value in self.mwes.items():
+            value_copy = value.copy()
+            value_copy["f7"] = list(value_copy["f7"])
+            mwes_copy[key] = value_copy
+
+        return {
+            "mwes": mwes_copy,
+            "active_filters": self.active_filters
+        }
 
     def from_dict(self, data: MWEDetectorDataSerialized):
         self.mwes.clear()
@@ -199,14 +207,10 @@ class MWEDetector:
 
         return sorted_lemmas
 
-    def _doc_to_example_type(self, doc: Doc, mwe_label: str):
+    def _doc_to_example_type(self, doc: Doc, mwe_label: str, rank_dict: Optional[dict[str, int]] = None):
         match_idx = tuple(
             [i for i, tok in enumerate(doc) if mwe_label in tok._.wikt_mwe]
         )
-        with open(
-            "/home/till/VSCode/mwe-detection/mwe_manager/input/frequencies/Lexique383_rank.json"
-        ) as f:
-            rank_dict = json.load(f)
         lemmas = self._sort_lemmas_by_rank(
             [doc[i].lemma_ for i in match_idx], rank_dict
         )
@@ -233,7 +237,7 @@ class MWEDetector:
                 self.mwes[mwe_key][filter_key], example
             )
 
-    def train(self, examples: list[Doc]):
+    def train(self, examples: list[Doc], rank_dict: Optional[dict[str, int]] = None):
         for doc in examples:
             mwes_present: set[str] = {
                 mwe
@@ -242,7 +246,7 @@ class MWEDetector:
                 for mwe in tok._.wikt_mwe.split("|")
             }
             for mwe in mwes_present:
-                example = self._doc_to_example_type(doc, mwe)
+                example = self._doc_to_example_type(doc, mwe, rank_dict)
 
                 self.train_from_example(example)
 
