@@ -84,24 +84,24 @@ class MWEDetectorData:
             }
         )
         self.active_filters: defaultdict[str, list[str]] = defaultdict(
-            lambda: ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+            lambda: ["f2", "f4", "f5"],
             {
-                "ADJ": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
-                "ADP": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
-                "ADV": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
-                "AUX": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
-                "CONJ": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
-                "DET": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
-                "INTJ": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
-                "NOUN": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
-                "NUM": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
-                "PART": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
-                "PRON": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
-                "PROPN": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
-                "PUNCT": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
-                "SYM": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
-                "VERB": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
-                "X": ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8"],
+                "ADJ": ["f2", "f4", "f5"],
+                "ADP": ["f2", "f4", "f5"],
+                "ADV": ["f2", "f4", "f5"],
+                "AUX": ["f2", "f4", "f5"],
+                "CONJ": ["f2", "f4", "f5"],
+                "DET": ["f2", "f4", "f5"],
+                "INTJ": ["f2", "f4", "f5"],
+                "NOUN": ["f2", "f4", "f5"],
+                "NUM": ["f2", "f4", "f5"],
+                "PART": ["f2", "f4", "f5"],
+                "PRON": ["f2", "f4", "f5"],
+                "PROPN": ["f2", "f4", "f5"],
+                "PUNCT": ["f2", "f4", "f5"],
+                "SYM": ["f2", "f4", "f5"],
+                "VERB": ["f2", "f4", "f5"],
+                "X": ["f2", "f4", "f5"],
             },
         )
         self.continuous_POS = ["ADJ", "ADV", "ADP", "CONJ", "INTJ", "NOUN", "PROPN"]
@@ -265,6 +265,10 @@ class MWEDetector:
         predictions = ["*" for _ in doc]
         count: int = 0
         for mwe_key, mwe in self.mwes.items():
+            PRINT = False
+            if mwe_key == "avoir carte blanche:VERB":
+                PRINT= True
+                print(mwe)
             lemmas = mwe["lemmas"]
             pos = mwe["pos"]
             token_lemmas = [tok.lemma_ for tok in doc]
@@ -273,10 +277,14 @@ class MWEDetector:
                 if pos in self._data.continuous_POS
                 else find_candidate_matches(lemmas, token_lemmas)
             )
+            if PRINT:
+                print(matches)
             for match_idx in matches:
                 if match_idx == ():
                     continue
                 filter_results = self.apply_filters(doc, mwe, match_idx)
+                if PRINT:
+                    print(filter_results)
                 if all(filter_results):
                     count += 1
                     for idx in match_idx:
