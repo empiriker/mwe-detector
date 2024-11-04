@@ -1,5 +1,11 @@
 # A SpaCy MWE identification pipeline component
 
+This component identifies multiword expressions (MWEs) in SpaCy documents and makes the output available at `token._.mwe_wikt`. The component, its underlying data and training are described in [Überrück-Fries et al. (2024)](https://aclanthology.org/2024.nlp4call-1.19/).
+
+The component has been evaluated on the [Deep-Sequoia corpus](https://deep-sequoia.inria.fr/) and reached an F1-score of 0.776. Further details on the evaluation procedure and performance can also be found in the paper.
+
+Currently MWE identification is supported only for French.
+
 ## Installation
 
 1. Clone repository and install via
