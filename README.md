@@ -57,6 +57,12 @@ python train.py --lang_code fr
 
 ## Data
 
+This repository contains [data](./data/) that has been used in training and evaluation of the pipeline.
+
+- [fr_train_wiktionary.cupt](./data/fr_train_wiktionary.cupt) contains example sentences extracted from the [French Wiktionary](https://fr.wiktionary.org). The sentences have been processed with SpaCy and converted to the cupt format. An additional column `WIKT:MWE` has been added. These labels are not exhaustive, i.e. not all MWEs that could be annotated are annotated.
+- [fr_test_sequoia.cupt](./data/fr_test_sequoia.cupt) contains the original [Deep-Sequoia corpus](https://gitlab.inria.fr/sequoia/deep-sequoia/-/blob/master/tags/sequoia-9.2/sequoia-ud.parseme.frsemcor?ref_type=heads) but replaces the original annotations `PARSEME:MWE` and `FRSEMCOR:NOUN` with `WIKT:MWE` as described in Überrück-Fries et al. (2024).
+- [fr_rank.json](./data/fr_rank.json) is a rank dictionary derived from the [Lexique383](http://www.lexique.org/databases/Lexique383/) word list. It serves to store an MWEs constituent lemmas by inverse order of frequency, optimizing the search for MWE candidates.
+
 ## Acknowledgements
 
 This work was funded by an internship grant form the Graduate School in Computer Science of the Paris-Saclay University, as well as by the French Agence Nationale pour la Recherche, through the SELEXINI project (ANR-21-CE23-0033-01).
