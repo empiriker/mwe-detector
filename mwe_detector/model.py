@@ -265,10 +265,6 @@ class MWEDetector:
         predictions = ["*" for _ in doc]
         count: int = 0
         for mwe_key, mwe in self.mwes.items():
-            PRINT = False
-            if mwe_key == "avoir carte blanche:VERB":
-                PRINT= True
-                print(mwe)
             lemmas = mwe["lemmas"]
             pos = mwe["pos"]
             token_lemmas = [tok.lemma_ for tok in doc]
@@ -277,14 +273,10 @@ class MWEDetector:
                 if pos in self._data.continuous_POS
                 else find_candidate_matches(lemmas, token_lemmas)
             )
-            if PRINT:
-                print(matches)
             for match_idx in matches:
                 if match_idx == ():
                     continue
                 filter_results = self.apply_filters(doc, mwe, match_idx)
-                if PRINT:
-                    print(filter_results)
                 if all(filter_results):
                     count += 1
                     for idx in match_idx:
